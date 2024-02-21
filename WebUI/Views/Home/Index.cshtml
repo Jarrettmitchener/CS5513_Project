@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <h1>Search</h1>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post" asp-action="ProcessSearch" class="mt-4">
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label">Keywords:</label>
+                        <input type="text" id="keywords" name="Keywords" class="form-control" autocomplete="off" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="algorithm" class="form-label">Algorithm:</label>
+                        <select id="algorithm" name="Algorithm" class="form-select">
+                            <option value="1">Algorithm 1</option>
+                            <option value="2">Algorithm 2</option>
+                            <option value="3">Algorithm 3</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
