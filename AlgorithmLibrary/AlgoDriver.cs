@@ -17,10 +17,10 @@ namespace AlgorithmLibrary
             Algo2 algo = new Algo2();
             return algo.GetResult();
         }
-        public string Algorithm3()
+        public List<string> Algorithm3(List<string> keywords)
         {
-            Algo3 algo = new Algo3();
-            return algo.GetResult();
+            BoyerMoore algo = new BoyerMoore();
+            return algo.Search(keywords);
         }
     }
 }

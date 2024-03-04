@@ -65,7 +65,8 @@ namespace WebUI.Controllers
                     retunString = algDriver.Algorithm2();
                     break;
                 case 3:
-                    retunString = algDriver.Algorithm3();
+                    List<string> substrings = new List<string>(model.Keywords.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    List<string> results = algDriver.Algorithm3(substrings);
                     break;
 
             }
