@@ -10,7 +10,8 @@ namespace AlgorithmLibrary
         public string Algorithm1()
         {
             Algo1 algo = new Algo1();
-            return algo.GetResult();
+            string[] res = algo.GetResult();
+            return res[0];
         }
         public string Algorithm2()
         {
