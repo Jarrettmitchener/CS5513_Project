@@ -2,10 +2,21 @@
 
 namespace AlgorithmLibrary
 {
+    //query parameters class to be passed to the algorithm driver
+    //This includes all what should be needed for each algorithm
+    public class QueryParameters
+    {
+        public List<int> datasets = new List<int>();
+        public List<string> keywords = new List<string>();
+        public int algorithmChosen { get; set;}
+
+
+    }
     public class AlgoDriver
     {
         //main file that calls the other 3 algorithm files
         //this way each algorithm file is seperated
+        
 
         public string Algorithm1()
         {

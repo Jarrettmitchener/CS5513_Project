@@ -38,6 +38,9 @@ namespace WebUI.Controllers
         {
             public string Keywords { get; set; }
             public int Algorithm { get; set; }
+            public bool Dataset1Selected { get; set; }
+            public bool Dataset2Selected { get; set; }
+            public bool Dataset3Selected { get; set; }
         }
         //gets the model data from the submitted
         [HttpPost]

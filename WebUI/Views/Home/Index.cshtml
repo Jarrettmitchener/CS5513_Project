@@ -3,9 +3,6 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-
     <h1>Search</h1>
 
     <div class="container">
@@ -14,15 +11,25 @@
                 <form method="post" asp-action="ProcessSearch" class="mt-4">
                     <div class="mb-3">
                         <label for="keywords" class="form-label">Keywords:</label>
-                        <input type="text" id="keywords" name="Keywords" class="form-control" autocomplete="off" />
+                        <input type="text" id="keywords" name="Keywords" class="form-control" autocomplete="off" required />
                     </div>
                     <div class="mb-3">
                         <label for="algorithm" class="form-label">Algorithm:</label>
                         <select id="algorithm" name="Algorithm" class="form-select">
-                            <option value="1">Algorithm 1</option>
-                            <option value="2">Algorithm 2</option>
-                            <option value="3">Algorithm 3</option>
+                            <option value="1">Top-K</option>
+                            <option value="2">Knuth-Morris-Pratt</option>
+                            <option value="3">Boyer-Moore</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Datasets to search on:</label><br />
+                        <input type="checkbox" id="dataset1" name="Dataset1Selected" value="true" />
+                        <label for="dataset1">Dataset 1</label><br />
+                        <input type="checkbox" id="dataset2" name="Dataset2Selected" value="true" />
+                        <label for="dataset2">Dataset 2</label><br />
+                        <input type="checkbox" id="dataset3" name="Dataset3Selected" value="true" />
+                        <label for="dataset3">Dataset 3</label><br />
+                       
                     </div>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
