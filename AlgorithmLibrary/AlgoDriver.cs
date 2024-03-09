@@ -19,7 +19,8 @@ namespace AlgorithmLibrary
         }
         public List<string> Algorithm3(List<string> keywords)
         {
-            BoyerMoore algo = new BoyerMoore();
+            //BoyerMoore algo = new BoyerMoore();
+            BoyerMooreAdvanced algo = new BoyerMooreAdvanced();
             return algo.Search(keywords);
         }
     }

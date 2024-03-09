@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace AlgorithmLibrary.Algorithms
 {
-    public class BoyerMoore
+    public class BoyerMooreAdvanced
     {
-
-
         // generated list with 20 sentences all relating to school
         public List<string> GetRawList()
         {
             List<string> schoolSentences = new List<string>
             {
                 "School is a place where students learn and grow.",
+                "school, school, school, and school. I hate school.",
                 "Teachers play a vital role in shaping young minds in school.",
                 "Students eagerly anticipate the end of the school day to engage in extracurricular activities.",
                 "The school cafeteria offers a variety of meals to cater to diverse tastes.",
@@ -35,20 +34,24 @@ namespace AlgorithmLibrary.Algorithms
                 "The school year is filled with exciting events like prom, graduation, and field trips.",
                 "Volunteering at school events strengthens community ties and fosters a sense of pride.",
                 "Teachers often use multimedia tools to make lessons engaging and interactive.",
+                
             };
 
 
             return schoolSentences;
         }
 
+       
+
         public List<string> Search(List<string> keywords)
         {
             List<string> texts = GetRawList();
 
             List<string> results = new List<string>();
+            List<searchResult> searchResults = new List<searchResult>();
 
             // pre processes the text and keyword list to be lowercase
-            for(int i = 0; i < texts.Count; i++)
+            for (int i = 0; i < texts.Count; i++)
             {
                 texts[i] = texts[i].ToLower();
             }
@@ -58,23 +61,59 @@ namespace AlgorithmLibrary.Algorithms
             }
 
             // actually begins search
+            //loops through each text entry
             foreach (var text in texts)
             {
+                int occurences = 0;
+                bool found = false;
+                //loops for each keyword
                 foreach (var keyword in keywords)
                 {
-                    if (BoyerMooreSearch(text, keyword))
+                    searchResult foundResult = BoyerMooreSearch(text, keyword);
+
+                    if (foundResult.resultFound == true)
                     {
-                        results.Add(text);
-                        break;
+                        found = true;
+                        occurences += foundResult.foundCount;
                     }
                 }
+                //if the serach result is found, add it to the new entry list
+                if(found == true)
+                {
+                    searchResult newEntry = new searchResult();
+                    newEntry.text = text;
+                    newEntry.foundCount = occurences;
+
+                    searchResults.Add(newEntry);
+                }
             }
+            //sorts the list based on the number of found patterns
+            var sortedSearchResults = searchResults.OrderByDescending(r => r.foundCount).ToList();
+
+            //converts the searchResults list to a string list
+            results = sortedSearchResults.Select(r =>r.text).ToList();
 
             return results;
         }
         //returns true if the keyword is found
-        private bool BoyerMooreSearch(string text, string pattern)
+        //private class that will return information relavent to the boyer moore search
+        private class searchResult
         {
+            public bool resultFound { get; set; }
+            public int foundCount { get; set; }
+            public string text { get; set; }
+
+            public searchResult()
+            {
+                resultFound = false;
+                foundCount = 0;
+                text = string.Empty;
+            }
+        }
+
+        private searchResult BoyerMooreSearch(string text, string pattern)
+        {
+            searchResult result = new searchResult();
             int m = pattern.Length;
             int n = text.Length;
             int[] badChar = new int[256];
@@ -95,7 +134,9 @@ namespace AlgorithmLibrary.Algorithms
                 // If the pattern is present at the current shift
                 if (j < 0)
                 {
-                    return true;
+                    result.resultFound = true;
+                    result.foundCount++;
+                    s += (s + m < n) ? m - badChar[text[s + m]] : 1;
                 }
                 else
                 {
@@ -106,7 +147,7 @@ namespace AlgorithmLibrary.Algorithms
                 }
             }
 
-            return false;
+            return result;
         }
 
         private void badCharHeuristic(string str, int size, int[] badChar)
