@@ -1,4 +1,5 @@
 ﻿using AlgorithmLibrary.Algorithms;
+using AlgorithmLibrary.Datasets;
 
 namespace AlgorithmLibrary
 {
@@ -20,6 +21,10 @@ namespace AlgorithmLibrary
 
         public string Algorithm1()
         {
+            //testing dataset handler
+            string path = "DisneylandReviews.csv";
+            string json = DataSetHandler.ConvertCsvToJson(path);
+
             Algo1 algo = new Algo1();
             string[] res = algo.GetResult();
             return res[0];
