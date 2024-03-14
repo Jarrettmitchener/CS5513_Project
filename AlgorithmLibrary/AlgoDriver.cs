@@ -32,7 +32,13 @@ namespace AlgorithmLibrary
             //var test = dtHandler.getSpotifyOldiesDataset(path);
             //var test = dtHandler.getHumorDetectionDataset(path);
             //var test = dtHandler.getBBCTextsDataset(path);
-            var test = dtHandler.getNewsArticleSummariesDataset(path);
+            //var test = dtHandler.getNewsArticleSummariesDataset(path);
+
+            int t1 = dtHandler.getAverageWordsFromDataset("DisneylandReviews.csv", "Review_Text");
+            int t2 = dtHandler.getAverageWordsFromDataset("oldies_60s_top_artists_tracks.csv", "Track Name");
+            int t3 = dtHandler.getAverageWordsFromDataset("humor_detection.csv", "text");
+            int t4 = dtHandler.getAverageWordsFromDataset("docs_stage_2_parsed_text.csv", "DocText");
+            int t5 = dtHandler.getAverageWordsFromDataset("news_summary_more.csv", "text");
 
             Algo1 algo = new Algo1();
             string[] res = algo.GetResult();

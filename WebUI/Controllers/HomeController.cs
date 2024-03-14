@@ -41,6 +41,8 @@ namespace WebUI.Controllers
             public bool Dataset1Selected { get; set; }
             public bool Dataset2Selected { get; set; }
             public bool Dataset3Selected { get; set; }
+            public bool Dataset4Selected { get; set; }
+            public bool Dataset5Selected { get; set; }
         }
         //gets the model data from the submitted
         [HttpPost]

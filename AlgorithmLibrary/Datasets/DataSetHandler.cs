@@ -118,8 +118,36 @@ namespace AlgorithmLibrary.Datasets
             return articles;
         }
 
+        //aux function that just counts the average number of words in a document
+        private int getAverageWords(string filePath, string header)
+        {
+            //reads text from file
+            var csv = File.ReadAllText(filePath);
+            int recordCount = 0;
+            int numOfWords = 0;
+            List<DatasetObject> articles = new List<DatasetObject>();
+            //iterates each line and adds the csv data to the list
+            foreach (var line in CsvReader.ReadFromText(csv))
+            {
+                //gets the string from the line
+                string str = line[header];
+                string[] words = str.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                numOfWords += words.Length;
+                recordCount++;
+            }
+
+            int averageWords = numOfWords / recordCount;
+            return averageWords;
+        }
 
 
+        public int getAverageWordsFromDataset(string fileName, string header)
+        {
+            string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
+
+            return getAverageWords(filePath, header);
+        }
 
         public List<DatasetObject> getSpotifyOldiesDataset(string fileName)
         {

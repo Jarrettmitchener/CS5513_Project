@@ -1,6 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
 
 <div class="text-center">
     <h1>Search</h1>
@@ -22,17 +38,70 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Datasets to search on:</label><br />
+                        <label class="form-label"><strong>Datasets to search on</strong>:</label><br />
                         <input type="checkbox" id="dataset1" name="Dataset1Selected" value="true" />
-                        <label for="dataset1">Dataset 1</label><br />
+                        <label for="dataset1">Disneyland Reviews</label><br />
                         <input type="checkbox" id="dataset2" name="Dataset2Selected" value="true" />
-                        <label for="dataset2">Dataset 2</label><br />
+                        <label for="dataset2">BBC Text Documents</label><br />
                         <input type="checkbox" id="dataset3" name="Dataset3Selected" value="true" />
-                        <label for="dataset3">Dataset 3</label><br />
+                        <label for="dataset3">Humor Texts</label><br />
+                        <input type="checkbox" id="dataset4" name="Dataset4Selected" value="true" />
+                        <label for="dataset4">News Article Summaries</label><br />
+                        <input type="checkbox" id="dataset5" name="Dataset5Selected" value="true" />
+                        <label for="dataset5">Top Artists tracks from the 60s</label><br />
                        
                     </div>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
+                
+            </div>
+            <div class="mb-5">
+                <br />
+                <label class="form-label"><strong>Dataset Quick Information</strong>:</label><br />
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>Entry Count</th>
+                            <th>Summary</th>
+                            <th>Average words per entry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Disneyland Reviews</td>
+                            <td>42,656</td>
+                            <td>Reviews of differnet disneyland parks across the world</td>
+                            <td>129</td>
+                        </tr>
+                        <tr>
+                            <td>BBC Text Documents</td>
+                            <td>2,205</td>
+                            <td>Procseed BBC text documents</td>
+                            <td>370</td>
+                        </tr>
+                        <tr>
+                            <td>Humor Texts</td>
+                            <td>200,001</td>
+                            <td>Jokes that may be funny</td>
+                            <td>11</td>
+                        </tr>
+                        <tr>
+                            <td>News Article Summaries</td>
+                            <td>98,400</td>
+                            <td>Summaries of various news articles from various news sources</td>
+                            <td>58</td>
+                        </tr>
+                        <tr>
+                            <td>Top Artists tracks from the 60s</td>
+                            <td>484</td>
+                            <td>Track names of the most popular artists on spotify from the 60s</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
             </div>
         </div>
     </div>
