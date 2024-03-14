@@ -59,9 +59,21 @@ namespace WebUI.Controllers
             AlgoDriver algDriver = new AlgoDriver();
             string retunString = "";
 
+            //sets up query parameters
+            QueryParameters queryParameters = new QueryParameters
+            {
+                //assigns the datasets
+                Dataset1 = model.Dataset1Selected,
+                Dataset2 = model.Dataset2Selected,
+                Dataset3 = model.Dataset3Selected,
+                Dataset4 = model.Dataset4Selected,
+                Dataset5 = model.Dataset5Selected,
+                keywords = new List<string>(model.Keywords.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            };
+
             //separates our input based on which algorithm the user chose
             //Should be no algorithm logic here just selection
-            switch(model.Algorithm)
+            switch (model.Algorithm)
             {
                 case 1:
                     retunString = algDriver.Algorithm1();
@@ -70,7 +82,8 @@ namespace WebUI.Controllers
                     retunString = algDriver.Algorithm2();
                     break;
                 case 3:
-                    retunString = algDriver.Algorithm3();
+
+                    retunString = algDriver.Algorithm3(queryParameters);
                     break;
 
             }

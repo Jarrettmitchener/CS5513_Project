@@ -4,12 +4,15 @@ using AlgorithmLibrary.Datasets;
 namespace AlgorithmLibrary
 {
     //query parameters class to be passed to the algorithm driver
-    //This includes all what should be needed for each algorithm
+    //may add more to this later in development
     public class QueryParameters
     {
-        public List<int> datasets = new List<int>();
         public List<string> keywords = new List<string>();
-        public int algorithmChosen { get; set;}
+        public bool Dataset1 { get; set; }
+        public bool Dataset2 { get; set; }
+        public bool Dataset3 { get; set; }
+        public bool Dataset4 { get; set; }
+        public bool Dataset5 { get; set; }
 
 
     }
@@ -17,28 +20,17 @@ namespace AlgorithmLibrary
     {
         //main file that calls the other 3 algorithm files
         //this way each algorithm file is seperated
-        
+
+        DataSetHandler _dtHandler;
+        public AlgoDriver() 
+        {
+            //creates dataset handler upon driver creation
+            _dtHandler = new DataSetHandler();
+        }
+
 
         public string Algorithm1()
         {
-            //testing dataset handler
-            //string path = "DisneylandReviews.csv";
-            //string path = "oldies_60s_top_artists_tracks.csv";
-            //string path = "humor_detection.csv";
-            //string path = "docs_stage_2_parsed_text.csv";
-            string path = "news_summary_more.csv";
-            DataSetHandler dtHandler = new DataSetHandler();
-            //string json = dtHandler.ConvertCsvToJson(path);
-            //var test = dtHandler.getSpotifyOldiesDataset(path);
-            //var test = dtHandler.getHumorDetectionDataset(path);
-            //var test = dtHandler.getBBCTextsDataset(path);
-            //var test = dtHandler.getNewsArticleSummariesDataset(path);
-
-            int t1 = dtHandler.getAverageWordsFromDataset("DisneylandReviews.csv", "Review_Text");
-            int t2 = dtHandler.getAverageWordsFromDataset("oldies_60s_top_artists_tracks.csv", "Track Name");
-            int t3 = dtHandler.getAverageWordsFromDataset("humor_detection.csv", "text");
-            int t4 = dtHandler.getAverageWordsFromDataset("docs_stage_2_parsed_text.csv", "DocText");
-            int t5 = dtHandler.getAverageWordsFromDataset("news_summary_more.csv", "text");
 
             Algo1 algo = new Algo1();
             string[] res = algo.GetResult();
@@ -49,8 +41,11 @@ namespace AlgorithmLibrary
             Algo2 algo = new Algo2();
             return algo.GetResult();
         }
-        public string Algorithm3()
+        public string Algorithm3(QueryParameters parameters)
         {
+            //builds the dataset bade on which datasets the user wants
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+
             Algo3 algo = new Algo3();
             return algo.GetResult();
         }

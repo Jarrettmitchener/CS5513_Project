@@ -18,106 +18,6 @@ namespace AlgorithmLibrary.Datasets
     }
     public class DataSetHandler
     {
-        //inner function that returns the disneyLand reviews in DatasetObject list format
-        private List<DatasetObject> getDisneyLandReviews(string filePath)
-        {
-            //reads text from file
-            var csv = File.ReadAllText(filePath);
-
-            List<DatasetObject> DisneyLandReviews = new List<DatasetObject>();
-            //iterates each line and adds the csv data to the list
-            foreach (var line in CsvReader.ReadFromText(csv))
-            {
-                DisneyLandReviews.Add(new DatasetObject
-                {
-                    Text = line["Review_Text"],
-                    Dataset = "Disney Land Reviews"
-                }) ;
-            }
-
-            return DisneyLandReviews;
-        }
-
-        //inner function that returns the spotyify oldiess in DatasetObject list format
-        private List<DatasetObject> getSpotifyOldies(string filePath)
-        {
-            //reads text from file
-            var csv = File.ReadAllText(filePath);
-
-            List<DatasetObject> spotifyOldies = new List<DatasetObject>();
-            //iterates each line and adds the csv data to the list
-            foreach (var line in CsvReader.ReadFromText(csv))
-            {
-                spotifyOldies.Add(new DatasetObject
-                {
-                    Text = line["Track Name"],
-                    Dataset = "Spotify oldies"
-                });
-            }
-
-            return spotifyOldies;
-        }
-
-        //inner function that returns the whatsapp app store reviewss in DatasetObject list format
-        private List<DatasetObject> getHumorDetection(string filePath)
-        {
-            //reads text from file
-            var csv = File.ReadAllText(filePath);
-
-            List<DatasetObject> dune2Reviews = new List<DatasetObject>();
-            //iterates each line and adds the csv data to the list
-            foreach (var line in CsvReader.ReadFromText(csv))
-            {
-                dune2Reviews.Add(new DatasetObject
-                {
-                    Text = line["text"],
-                    Dataset = "Humor Detection"
-                });
-            }
-
-            return dune2Reviews;
-        }
-
-        //inner function that returns the BBC full text in DatasetObject list format
-        private List<DatasetObject> getBBCtext(string filePath)
-        {
-            //reads text from file
-            var csv = File.ReadAllText(filePath);
-
-            List<DatasetObject> bbcTexts = new List<DatasetObject>();
-            //iterates each line and adds the csv data to the list
-            foreach (var line in CsvReader.ReadFromText(csv))
-            {
-                bbcTexts.Add(new DatasetObject
-                {
-                    Text = line["DocText"],
-                    Dataset = "BBC Texts"
-                });
-            }
-
-            return bbcTexts;
-        }
-
-        //inner function that returns the news article summary in DatasetObject list format
-        private List<DatasetObject> getNewsArticleText(string filePath)
-        {
-            //reads text from file
-            var csv = File.ReadAllText(filePath);
-
-            List<DatasetObject> articles = new List<DatasetObject>();
-            //iterates each line and adds the csv data to the list
-            foreach (var line in CsvReader.ReadFromText(csv))
-            {
-                articles.Add(new DatasetObject
-                {
-                    Text = line["text"],
-                    Dataset = "News Article Summaries"
-                });
-            }
-
-            return articles;
-        }
-
         //aux function that just counts the average number of words in a document
         private int getAverageWords(string filePath, string header)
         {
@@ -139,8 +39,32 @@ namespace AlgorithmLibrary.Datasets
             int averageWords = numOfWords / recordCount;
             return averageWords;
         }
+        //inner function that returns the csv text as a list of entries where entries are the DatasetObject
+        //filepath is filepath
+        //header is the header used in the csv file where we want to extract
+        //datasetName is the name we want to associate with this pull
+        private List<DatasetObject> extractTextFromDataset(string filePath, string header, string datasetName)
+        {
+            //reads text from file
+            var csv = File.ReadAllText(filePath);
 
+            List<DatasetObject> articles = new List<DatasetObject>();
+            //iterates each line and adds the csv data to the list
+            foreach (var line in CsvReader.ReadFromText(csv))
+            {
+                //adds the object
+                articles.Add(new DatasetObject
+                {
+                    Text = line[header],
+                    Dataset = datasetName
+                });
+            }
 
+            return articles;
+        }
+
+        //gets the average amount of words from a dataset
+        //pretty much just made this for the quick dataset information on the WebUI, isn't present in the execution of the algorithms
         public int getAverageWordsFromDataset(string fileName, string header)
         {
             string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
@@ -148,78 +72,50 @@ namespace AlgorithmLibrary.Datasets
 
             return getAverageWords(filePath, header);
         }
-
-        public List<DatasetObject> getSpotifyOldiesDataset(string fileName)
+        //builds the dataset return list based on which datasets the user wants to pull from
+        //ds1 - disneyland
+        //ds2 - BBC text documents
+        //ds3 - humor texts
+        //ds4 - news article summaries
+        //ds5 - spotify oldies
+        public List<DatasetObject> buildDatasetList(bool ds1,  bool ds2, bool ds3, bool ds4, bool ds5)
         {
+            //path variables, this is needed because even though this file is in the same directory as the datasets, it 
+            //sets the execution as the root, which will give us filepath errors. this fixes it
             string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
+            string partialPath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\";
 
-            return getSpotifyOldies(filePath);
-        }
-        public List<DatasetObject> getHumorDetectionDataset(string fileName)
-        {
-            string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
-
-            return getHumorDetection(filePath);
-        }
-
-        public List<DatasetObject> getBBCTextsDataset(string fileName)
-        {
-            string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
-
-            return getBBCtext(filePath);
-        }
-
-        public List<DatasetObject> getNewsArticleSummariesDataset(string fileName)
-        {
-            string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
-
-            return getNewsArticleText(filePath);
-        }
-
-        public string ConvertCsvToJson(string fileName)
-        {
-            // Read all lines from the CSV file
-            string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
-            string[] lines = File.ReadAllLines(filePath);
-
-            //begining of the csv stuff
-            var csv = File.ReadAllText(filePath);
-
-            var test = getDisneyLandReviews(filePath);
-
-            foreach(var line in CsvReader.ReadFromText(csv))
+            List<DatasetObject> datasetList = new List<DatasetObject>();
+            //if statement case that builds the list based on what datasets the user wanted
+            if(ds1 == true)
             {
-                var firstCell = line[0];
-                var byName = line["Review_Text"];
+                //combines the filepath with the associated csv file
+                string filepath = partialPath + "DisneylandReviews.csv";
+                //adds the list to the existing list
+                datasetList.AddRange(extractTextFromDataset(filepath, "Review_Text", "Disney Land Reviews"));
             }
-
-            // Extract the headers (types)
-            string[] headers = lines[0].Split(',');
-
-            // Create a list to hold JSON objects
-            List<Dictionary<string, string>> jsonObjects = new List<Dictionary<string, string>>();
-
-            // Iterate through the remaining lines to create JSON objects
-            for (int i = 1; i < lines.Length; i++)
+            if (ds2 == true)
             {
-                string[] values = lines[i].Split(',');
-                Dictionary<string, string> jsonObject = new Dictionary<string, string>();
-
-                for (int j = 0; j < headers.Length; j++)
-                {
-                    jsonObject[headers[j]] = values[j];
-                }
-
-                jsonObjects.Add(jsonObject);
+                string filepath = partialPath + "docs_stage_2_parsed_text.csv";
+                datasetList.AddRange(extractTextFromDataset(filepath, "DocText", "BBC Text Documents"));
             }
-
-            // Serialize the list of JSON objects to JSON
-            return JsonSerializer.Serialize(jsonObjects, new JsonSerializerOptions { WriteIndented = true });
+            if (ds3 == true)
+            {
+                string filepath = partialPath + "humor_detection.csv";
+                datasetList.AddRange(extractTextFromDataset(filepath, "text", "Humor Texts"));
+            }
+            if (ds4 == true)
+            {
+                string filepath = partialPath + "news_summary_more.csv";
+                datasetList.AddRange(extractTextFromDataset(filepath, "text", "News Article Summaries"));
+            }
+            if (ds5 == true)
+            {
+                string filepath = partialPath + "oldies_60s_top_artists_tracks.csv";
+                datasetList.AddRange(extractTextFromDataset(filepath, "Track Name", "Top Artists tracks from the 60s"));
+            }
+            return datasetList;
         }
+        
     }
 }
