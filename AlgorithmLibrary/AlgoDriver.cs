@@ -22,8 +22,17 @@ namespace AlgorithmLibrary
         public string Algorithm1()
         {
             //testing dataset handler
-            string path = "DisneylandReviews.csv";
-            string json = DataSetHandler.ConvertCsvToJson(path);
+            //string path = "DisneylandReviews.csv";
+            //string path = "oldies_60s_top_artists_tracks.csv";
+            //string path = "humor_detection.csv";
+            //string path = "docs_stage_2_parsed_text.csv";
+            string path = "news_summary_more.csv";
+            DataSetHandler dtHandler = new DataSetHandler();
+            //string json = dtHandler.ConvertCsvToJson(path);
+            //var test = dtHandler.getSpotifyOldiesDataset(path);
+            //var test = dtHandler.getHumorDetectionDataset(path);
+            //var test = dtHandler.getBBCTextsDataset(path);
+            var test = dtHandler.getNewsArticleSummariesDataset(path);
 
             Algo1 algo = new Algo1();
             string[] res = algo.GetResult();

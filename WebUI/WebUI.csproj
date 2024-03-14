@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Csv" Version="2.0.93" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AlgorithmLibrary\AlgorithmLibrary.csproj" />
   </ItemGroup>
 
