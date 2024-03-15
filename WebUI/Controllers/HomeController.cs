@@ -43,6 +43,7 @@ namespace WebUI.Controllers
             public bool Dataset3Selected { get; set; }
             public bool Dataset4Selected { get; set; }
             public bool Dataset5Selected { get; set; }
+            public bool Advanced { get; set; }
         }
         //gets the model data from the submitted
         [HttpPost]
@@ -82,11 +83,26 @@ namespace WebUI.Controllers
                     retunString = algDriver.Algorithm2();
                     break;
                 case 3:
+                    //if case if wanting advanced or not
+                    singleQueryResult newResult = new singleQueryResult();
+                    if(model.Advanced)
+                    {
+                        newResult = algDriver.BoyerMooreAdvancedAlgorithm(queryParameters);
+                    }
+                    else
+                    {
+                        newResult = algDriver.BoyerMooreAlgorithm(queryParameters);
+                    }
 
-                    retunString = algDriver.Algorithm3(queryParameters);
-                    List<string> substrings = new List<string>(model.Keywords.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                    List<string> results = algDriver.Algorithm3(substrings);
-                    break;
+                    //trims the results to be top 20
+                    newResult.foundResults = newResult.foundResults.Take(20).ToList();
+                    //for(int i = 0; i < newResult.foundResults.Count;)
+                    //{
+                    //    if (newResult.foundResults[i].text.Count() > )
+                    //}
+                    //break;
+
+                    return View("SingleResults", newResult);
 
             }
             ViewData["AlgorithMessage"] = retunString;

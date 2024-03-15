@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlgorithmLibrary.Datasets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,17 +44,24 @@ namespace AlgorithmLibrary.Algorithms
 
        
 
-        public List<string> Search(List<string> keywords)
+        public List<textResult> Search(List<string> keywords, List<DatasetObject> dataSetList)
         {
-            List<string> texts = GetRawList();
+            //List<string> texts = GetRawList();
+            List<BoyerMooreListObj> boyerMooreListObjs = new List<BoyerMooreListObj>();
 
-            List<string> results = new List<string>();
+            List<textResult> results = new List<textResult>();
             List<searchResult> searchResults = new List<searchResult>();
 
             // pre processes the text and keyword list to be lowercase
-            for (int i = 0; i < texts.Count; i++)
+            for (int i = 0; i < dataSetList.Count; i++)
             {
-                texts[i] = texts[i].ToLower();
+                //Assigns the string, a lowered search string, and the dataset to the boyereMoore Lists
+                boyerMooreListObjs.Add(new BoyerMooreListObj
+                {
+                    originalString = dataSetList[i].Text,
+                    searchString = dataSetList[i].Text.ToLower(),
+                    dataSet = dataSetList[i].Dataset
+                });
             }
             for (int i = 0; i < keywords.Count; i++)
             {
@@ -62,14 +70,14 @@ namespace AlgorithmLibrary.Algorithms
 
             // actually begins search
             //loops through each text entry
-            foreach (var text in texts)
+            foreach (var obj in boyerMooreListObjs)
             {
                 int occurences = 0;
                 bool found = false;
                 //loops for each keyword
                 foreach (var keyword in keywords)
                 {
-                    searchResult foundResult = BoyerMooreSearch(text, keyword);
+                    searchResult foundResult = BoyerMooreSearch(obj.searchString, keyword);
 
                     if (foundResult.resultFound == true)
                     {
@@ -81,8 +89,9 @@ namespace AlgorithmLibrary.Algorithms
                 if(found == true)
                 {
                     searchResult newEntry = new searchResult();
-                    newEntry.text = text;
+                    newEntry.text = obj.originalString;
                     newEntry.foundCount = occurences;
+                    newEntry.dataset = obj.dataSet;
 
                     searchResults.Add(newEntry);
                 }
@@ -91,7 +100,15 @@ namespace AlgorithmLibrary.Algorithms
             var sortedSearchResults = searchResults.OrderByDescending(r => r.foundCount).ToList();
 
             //converts the searchResults list to a string list
-            results = sortedSearchResults.Select(r =>r.text).ToList();
+            foreach(var item in sortedSearchResults) 
+            {
+                results.Add(new textResult
+                {
+                    text = item.text,
+                    dataset = item.dataset
+                });
+            }
+            
 
             return results;
         }
@@ -102,12 +119,13 @@ namespace AlgorithmLibrary.Algorithms
             public bool resultFound { get; set; }
             public int foundCount { get; set; }
             public string text { get; set; }
-
+            public string dataset { get; set; }
             public searchResult()
             {
                 resultFound = false;
                 foundCount = 0;
                 text = string.Empty;
+                dataset = string.Empty;
             }
         }
 
@@ -143,7 +161,13 @@ namespace AlgorithmLibrary.Algorithms
                     // Shift the pattern to align the bad character in the text
                     // with the last occurrence of it in the pattern. The max
                     // function is used to make sure that we get a positive shift.
-                    s += Math.Max(1, j - badChar[text[s + j]]);
+                    char c = text[s + j];
+                    //this protects against weird characters that are not standard ASCII value
+                    if (c > 256)
+                    {
+                        c = ' ';
+                    }
+                    s += Math.Max(1, j - badChar[c]);
                 }
             }
 

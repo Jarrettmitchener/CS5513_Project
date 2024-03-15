@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlgorithmLibrary.Datasets;
 
 namespace AlgorithmLibrary.Algorithms
 {
+    public class BoyerMooreListObj
+    {
+        public string originalString { get; set; }
+        public string searchString { get; set; }
+        public string dataSet { get; set; }
+
+    }
+
     public class BoyerMoore
     {
 
@@ -41,16 +51,28 @@ namespace AlgorithmLibrary.Algorithms
             return schoolSentences;
         }
 
-        public List<string> Search(List<string> keywords)
+        public List<textResult> Search(List<string> keywords, List<DatasetObject> dataSetList)
         {
-            List<string> texts = GetRawList();
+            //starts the stopwatch time for the algorithm
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            //used for testing/debugging
+            //List<string> texts = GetRawList();
+            List<BoyerMooreListObj> boyerMooreListObjs = new List<BoyerMooreListObj>();
 
-            List<string> results = new List<string>();
+            List<textResult> results = new List<textResult>();
+
 
             // pre processes the text and keyword list to be lowercase
-            for(int i = 0; i < texts.Count; i++)
+            for(int i = 0; i < dataSetList.Count; i++)
             {
-                texts[i] = texts[i].ToLower();
+                //Assigns the string, a lowered search string, and the dataset to the boyereMoore Lists
+                boyerMooreListObjs.Add(new BoyerMooreListObj
+                {
+                    originalString = dataSetList[i].Text,
+                    searchString = dataSetList[i].Text.ToLower(),
+                    dataSet = dataSetList[i].Dataset
+                });
             }
             for (int i = 0; i < keywords.Count; i++)
             {
@@ -58,20 +80,26 @@ namespace AlgorithmLibrary.Algorithms
             }
 
             // actually begins search
-            foreach (var text in texts)
+            foreach (var obj in boyerMooreListObjs)
             {
                 foreach (var keyword in keywords)
                 {
-                    if (BoyerMooreSearch(text, keyword))
+                    if (BoyerMooreSearch(obj.searchString, keyword))
                     {
-                        results.Add(text);
+                        //adds the original string and not the lowered search string
+                        results.Add(new textResult 
+                        { 
+                            text = obj.originalString,
+                            dataset= obj.dataSet
+                        });
                         break;
                     }
                 }
             }
-
+            stopwatch.Stop();
+            double elapsedTimeSeconds = stopwatch.Elapsed.TotalSeconds;
             return results;
-        }
+        } 
         //returns true if the keyword is found
         private bool BoyerMooreSearch(string text, string pattern)
         {
@@ -102,7 +130,14 @@ namespace AlgorithmLibrary.Algorithms
                     // Shift the pattern to align the bad character in the text
                     // with the last occurrence of it in the pattern. The max
                     // function is used to make sure that we get a positive shift.
-                    s += Math.Max(1, j - badChar[text[s + j]]);
+                    char c = text[s + j];
+                    //this protects against weird characters that are not standard ASCII value
+                    if (c > 256)
+                    {
+                        c = ' ';
+                    }
+
+                    s += Math.Max(1, j - badChar[c]);
                 }
             }
 
