@@ -1,5 +1,6 @@
 ﻿using AlgorithmLibrary.Algorithms;
 using AlgorithmLibrary.Datasets;
+using System.Diagnostics;
 
 namespace AlgorithmLibrary
 {
@@ -16,6 +17,24 @@ namespace AlgorithmLibrary
 
 
     }
+    public class textResult
+    {
+        public string text;
+        public string dataset;
+    }
+    public class singleQueryResult
+    {
+        public List<textResult> foundResults { get; set; }
+        public int numOfResults { get; set; }
+        public double searchtime { get; set; }
+
+        public singleQueryResult()
+        {
+            numOfResults = 0;
+
+        }
+    }
+
     public class AlgoDriver
     {
         //main file that calls the other 3 algorithm files
@@ -41,13 +60,45 @@ namespace AlgorithmLibrary
             Algo2 algo = new Algo2();
             return algo.GetResult();
         }
-        public string Algorithm3(QueryParameters parameters)
+        public singleQueryResult BoyerMooreAlgorithm(QueryParameters parameters)
         {
+            Stopwatch sw = new Stopwatch();
+            
             //builds the dataset bade on which datasets the user wants
             var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
 
-            Algo3 algo = new Algo3();
-            return algo.GetResult();
+            //starts the stopwatch
+            sw.Start();
+            BoyerMoore boyerMoore = new BoyerMoore();
+            var results = boyerMoore.Search(parameters.keywords, dataSetList);
+            //stops the stopwatch
+            sw.Stop();
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = results;
+            singleQueryResult.numOfResults = results.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+
+            return singleQueryResult;
+        }
+        public singleQueryResult BoyerMooreAdvancedAlgorithm(QueryParameters parameters)
+        {
+            Stopwatch sw = new Stopwatch();
+
+            //builds the dataset bade on which datasets the user wants
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+
+            sw.Start();
+            BoyerMooreAdvanced boyerMooreAdvanced = new BoyerMooreAdvanced();
+            var results = boyerMooreAdvanced.Search(parameters.keywords, dataSetList);
+            sw.Stop();
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = results;
+            singleQueryResult.numOfResults = results.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+
+            return singleQueryResult;
         }
     }
 }

@@ -1,0 +1,28 @@
+﻿@model AlgorithmLibrary.singleQueryResult
+
+
+
+<h2>Search Results</h2>
+
+<div>
+    <p><strong>Search Time:</strong> @Model.searchtime seconds</p>
+    <p><strong>number of entries found:</strong> @Model.numOfResults</p>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Found Text (trimmed to top 20)</th>
+            <th>Dataset</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model.foundResults)
+        {
+            <tr>
+                <td>@result.text</td>
+                <td>@result.dataset</td>
+            </tr>
+        }
+    </tbody>
+</table>
