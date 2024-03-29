@@ -48,14 +48,33 @@ namespace AlgorithmLibrary
         }
 
 
-        public string Algorithm1(QueryParameters parameters)
+        public singleQueryResult Algorithm1(QueryParameters parameters)
         {
-
-            Algo1 algo = new Algo1();
-            //builds the dataset bade on which datasets the user wants
+            Stopwatch sw = new Stopwatch();
             var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
-            string[] res = algo.GetResult(parameters.keywords, dataSetList);
-            return res[0];
+
+            sw.Start();
+            Algo1 algo = new Algo1();
+            var res = algo.GetResult(parameters.keywords, dataSetList);
+            sw.Stop();
+
+            List<textResult> result = new List<textResult>();
+
+            foreach(string s in res)
+            {
+                result.Add(new textResult
+                {
+                    text = s,
+                    dataset = ""
+                });
+
+            }
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = result;
+            singleQueryResult.numOfResults = result.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+            return singleQueryResult;
         }
         public string Algorithm2()
         {

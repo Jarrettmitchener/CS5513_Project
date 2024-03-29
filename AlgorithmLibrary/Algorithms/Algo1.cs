@@ -123,12 +123,16 @@ namespace AlgorithmLibrary.Algorithms
         private string[] IRS()
         {
 
-            string[] res = ["jajajajajja"];
-            // First step : compute initial candidates.
+            string[] res = [""];
+            // First step : compute initial candidates. And the  adjusted threshold
             while (res.Length < f * k)
             {
+                // Compute the top k results using the  initial similarity threshold
                 res = computeSmilarity();
 
+                // if the size of the result set is less than the frequency and 
+               // multiplied by the k, you need to decrement the similarity threshold 
+               // to find at least k candidates.
                 if (res.Length < f * k)
                 {
                     theta = theta - 0.01;
@@ -136,45 +140,59 @@ namespace AlgorithmLibrary.Algorithms
 
             }
 
-            double min_theta = 0;
+            // Compute the scores for  elements in res and keep the first k
+            double min_theta = 0; // minimum similarity  
+
+            // Adjust the minimun similarity score, based on  last element on the
+            // results set.
             while (ComputeScore(min_theta, max_w) < ComputeScore(theta, last_top_k_value))
             {
                 min_theta += 0.01;
             }
 
+            // Then of the new theta is smaller,  rerun the top-k results. 
             if (min_theta < theta)
             {
-                //res = MergeSkip(init_set, min_theta);
                 theta = min_theta;
                 res = computeSmilarity();
             }
-            System.Console.WriteLine(res);
-            return res;
+      
+            return res; // return the resulting set
         }
 
 
+        // Compute the similarity score, based on the jacquard distance and the 
+        // weight of each string. 
         private double ComputeScore(double jcq, double weight)
         {
             return alpha * jcq + beta * weight;
         }
 
 
-
+        // Approximate search algorithm, finds the top k results given a 
+        // query string and dataset.
         private string[] computeSmilarity()
         {
+            // Initialize all necessary values ,
             double[] top_k = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
             string[] top_k_values = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10"];
-            //int count = 0;
+            
+            // For all the strings in the dataset.
             foreach (KeyValuePair<string, double> s in weights)
             {
+                
+                double num = 0.0; 
+                double den = query.Length + s.Key.Length + 0.0;  
 
-                double num = 0.0;
-                double den = query.Length + s.Key.Length + 0.0;
+                // calculate the number of matching grams for the query and 
+                // each strings. 
                 for (int j = 0; j < query.Length - q_value; j++)
                 {
                     string g2 = query.Substring(j, q_value);
                     for (int i = 0; i < s.Key.Length - q_value; i++)
                     {
+                        // Look for grams matchs, andn increments the number of
+                        // matches if any. 
                         string g1 = s.Key.Substring(i, q_value);
                         if (g1.Equals(g2)) { num += 1.0; }
                     }
@@ -182,15 +200,24 @@ namespace AlgorithmLibrary.Algorithms
                 double jacquard = num / (double)den;
                 double weight = s.Value;
 
-
+                // Compute the similarity score.
                 double score = ComputeScore(jacquard, weight);
 
+                // Look for all the top k values
+
+                // Check if the number score is higher that the last top k 
+                // value, and grater than the threshold 
                 if (score > top_k[k - 1] && score > theta)
                 {
+                    // Then add the new value to the last position.
+                    // forgetting the last element
                     top_k[k - 1] = score;
                     top_k_values[k - 1] = s.Key;
                     int i = k - 2;
 
+                    // iterate over all elements shifting the values to the 
+                    // following top k position according to the  score of the 
+                    // string. 
                     while (score > top_k[i] && i > 0)
                     {
                         top_k[i + 1] = top_k[i];
@@ -202,6 +229,7 @@ namespace AlgorithmLibrary.Algorithms
                     }
                     if (score > top_k[0])
                     {
+                        // In this case you have to be careful with indexes.
                         top_k[i + 1] = top_k[0];
                         top_k_values[i + 1] = top_k_values[0];
                         top_k[0] = score;
@@ -217,12 +245,15 @@ namespace AlgorithmLibrary.Algorithms
             return top_k_values;
         }
 
+        // Single pass algorithm, second stage, computes the top k results using the 
+        // grams and indexes to the elements. 
         private string[] SPS()
         {
             double n_gram = (double)grams.Count; // Number of grams in the query     
             double g = 0; // Freuency thresold.
-            List<int> top_K = new List<int>();
-            int top = 0;
+            List<int> top_K = new List<int>(); // list with top k elements,
+            int top = 0; // Number of added elemnts. 
+
             Queue<int> H = new Queue<int>();// The lists of ids for the query grams.
             int indx = 0;
             string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10", "kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10",];
