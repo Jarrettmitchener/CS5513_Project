@@ -84,6 +84,7 @@ namespace AlgorithmLibrary.Datasets
             //sets the execution as the root, which will give us filepath errors. this fixes it
             string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
             string partialPath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\";
+            partialPath = partialPath.Replace("\\Source\\Repos", "");
 
             List<DatasetObject> datasetList = new List<DatasetObject>();
             //if statement case that builds the list based on what datasets the user wanted

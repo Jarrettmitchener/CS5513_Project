@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlgorithmLibrary.Datasets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Generic;
@@ -19,80 +20,78 @@ namespace AlgorithmLibrary.Algorithms
         //private string[] init_set = new string[10]; // the range search result set
         private double theta = 0.0; // Similarity threshold, initially = 0.5
         private int q_value = 2; // Denotates q value for the gram calculation in the context
-        private double alpha = 1.0;
-        private double beta = 1.0;
-        private double last_top_k_value = 0;
-        private Dictionary<string, List<int>> grams = new Dictionary<string, List<int>>();
-        private double g_min = 10;
-        private int theta_min = 1;
-        private Dictionary<int, string> index_elements = new Dictionary<int, string>();
-        private string[] query_grams = new string[20];
+        private double alpha = 1.0; // Similarity weight
+        private double beta = 1.0; // Relevance weight 
+        private double last_top_k_value = 0; // Stores the similarity value of the last result. 
+        private Dictionary<string, List<int>> grams = new Dictionary<string, List<int>>(); // Stores the dataset grams 
+        private double g_min = 10; // What is the minimum similarity.
+        private int theta_min = 1;  // The similarity initial threshold. 
+        private Dictionary<int, string> index_elements = new Dictionary<int, string>(); // Stores the inverted grams list. 
+        private string[] query_grams = new string[20]; // Stores the grams of the query. 
 
         // TEST VALUES
         private string query = "macho es el mejor";
 
-        //public IDictionary Weights { get => weights; set => weights = value; }
-
-        public string[] GetResult()
+        //Function called from the algorithm driver. 
+        public  string[] GetResult(List<String> keywords, List<DatasetObject> dataSetList)
         {
-            weights["mata"] = 0.1;
-            weights["madero"] = 0.1;
-            weights["pez"] = 0.1;
-            weights["martillo"] = 0.1;
-            weights["madera"] = 0.1;
-            weights["madalena"] = 0.1;
-            weights["mad"] = 0.1;
-            weights["mada"] = 0.1;
-            weights["madena"] = 0.1;
-            weights["masssana"] = 0.1;
-            weights["panadera"] = 0.1;
-            weights["panadero"] = 0.1;
+            int count = 0;
 
-            //elemnent_to_index 
-            // read the wirghts by elemnt not by pharse. 
-            // Compute the overall a¡value of the phrase.
-            // Keep the max  added similarity within the phrase. 
-            // Complexity -- Implemntation time ... Space to storage ond compute, 
-            // Accuracy, Number of results
-            // Are the results relevant to the search  ??? 
+            // Create the list of indexes and weights for the  selected dataset.
+            foreach(DatasetObject s in  dataSetList)
+            { 
+                index_elements[count] = s.Text;
+                weights[s.Text] = 0.1;
+            }
 
-            index_elements[0] = "macho es";
-            index_elements[1] = "mata";
-            index_elements[2] = "madero";
-            index_elements[3] = "pez";
-            index_elements[4] = "martillo";
-            index_elements[5] = "madera";
-            index_elements[6] = "madalena";
-            index_elements[7] = "mad";
-            index_elements[8] = "mada";
-            index_elements[9] = "madena";
-            index_elements[10] = "masssana";
-            index_elements[11] = "panadera";
-            index_elements[12] = "panadero";
-            index_elements[0] = "macho el mejor de todos";
 
+            int s_count = 0;
+            string s_query = "";
+
+            // The way that the algo driver works it splits the words, because for the other 
+            // two alforithms in necessary, But in this case we put toghether the phrase again. 
+            foreach ( String s in keywords)
+            {
+                // If we have added more than one key word, then we need to add a space.
+                if ( s_count  > 0)
+                {
+                    s_query = s_query + " " +  s;
+                }
+                else // Start the query phrase. 
+                {
+                    s_query = s; 
+                }
+            }
+
+            // Compute the inverted index list that matches the query grams with the dataset tuples index that conains thar
+            // grmas.
             computeGrams();
 
-
-            string s_query = query;
-
+            // Call the ficntion that will execute the algorithm.
             return run_2HP(s_query);
         }
 
         private void computeGrams()
         {
+            // First start all of the lists, with the quey grams that will be used 
+            // as the keys to retirve the indexes. 
+            // This iterates over the query creating q_value length grams, that are subsrtirngs.
             for (int j = 0; j < query.Length - q_value; j++)
             {
-                string g1 = query.Substring(j, q_value);
-                query_grams[j] = (g1);
-                grams[g1] = new List<int>();
+                string g1 = query.Substring(j, q_value); // compute gram
+                query_grams[j] = (g1); // intitialize hash table
+                grams[g1] = new List<int>(); // Add the lists to each hash value. 
             }
 
+            // iterate over the dataset tuples. Looking for matches
             foreach (KeyValuePair<int, string> s in index_elements)
             {
+                // Compute each tuple grams.
                 for (int j = 0; j < s.Value.Length - q_value; j++)
                 {
                     string g1 = s.Value.Substring(j, q_value);
+                    // if the query grams list contains that gram.
+                    // then add the tuple index to the grams list.
                     if (query_grams.Contains(g1))
                     {
                         grams[g1].Add(s.Key);
@@ -107,18 +106,18 @@ namespace AlgorithmLibrary.Algorithms
             // Read data 
             //init_set = read_data();
             query = s_query;
-            R1 = IRS();
-            computeFrequency(last_top_k_value);
-            R1 = SPS();
+            R1 = IRS(); // itereative search algorithm
+            computeFrequency(last_top_k_value); // Compute threshold with IRS values.
+            R1 = SPS(); // Single pass search 
             return R1;
         }
 
         private void computeFrequency(double k)
         {
-            weights.Order();
-            double n_max = weights.First().Value;
+            weights.Order(); // order the list by weight 
+            double n_max = weights.First().Value; // get the highest value
 
-            g_min = (k - beta * n_max) / alpha;
+            g_min = (k - beta * n_max) / alpha; // Compute using the threshold fomula.
         }
 
         private string[] IRS()
@@ -226,7 +225,7 @@ namespace AlgorithmLibrary.Algorithms
             int top = 0;
             Queue<int> H = new Queue<int>();// The lists of ids for the query grams.
             int indx = 0;
-            string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10"];
+            string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10", "kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10",];
 
             foreach (KeyValuePair<string, List<int>> s in grams)
             {
@@ -322,14 +321,15 @@ namespace AlgorithmLibrary.Algorithms
             int m = 0;
             foreach (int index in top_K)
             {
-                res[m] = (index_elements[index]);
-                //res[m] = "hhhhheeehhehehe";
-                m++;
+                // Retrieve the  entries that correspond with the gram  list index. 
+                res[m] = (index_elements[index]); 
+                    m++; 
             }
 
-            return res;
+            return res; // Return the top k results.,
         }
 
+        
     }
 }
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using WebUI.Models;
 
 using AlgorithmLibrary;
+using System.Reflection.Metadata.Ecma335;
 
 namespace WebUI.Controllers
 {
@@ -77,7 +78,8 @@ namespace WebUI.Controllers
             switch (model.Algorithm)
             {
                 case 1:
-                    retunString = algDriver.Algorithm1();
+                    retunString = algDriver.Algorithm1(queryParameters);
+                    return View("SingleResults", ReturnType);
                     break;
                 case 2:
                     retunString = algDriver.Algorithm2();

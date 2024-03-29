@@ -48,11 +48,13 @@ namespace AlgorithmLibrary
         }
 
 
-        public string Algorithm1()
+        public string Algorithm1(QueryParameters parameters)
         {
 
             Algo1 algo = new Algo1();
-            string[] res = algo.GetResult();
+            //builds the dataset bade on which datasets the user wants
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+            string[] res = algo.GetResult(parameters.keywords, dataSetList);
             return res[0];
         }
         public string Algorithm2()
