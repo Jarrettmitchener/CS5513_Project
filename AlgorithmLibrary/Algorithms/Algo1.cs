@@ -255,9 +255,11 @@ namespace AlgorithmLibrary.Algorithms
             int top = 0; // Number of added elemnts. 
 
             Queue<int> H = new Queue<int>();// The lists of ids for the query grams.
-            int indx = 0;
-            string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10", "kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10",];
+            int indx = 0; // Index for retrieving the values
+            string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8",
+                "kk9", "kk10", "kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10",]; // result string
 
+            // insert the top element of each list to a heap
             foreach (KeyValuePair<string, List<int>> s in grams)
             {
                 if (s.Value.Count > 0)
@@ -266,15 +268,17 @@ namespace AlgorithmLibrary.Algorithms
                 }
             }
 
+            // For all of the elemnts in the heap. 
             for (int i = 0; i < H.Count(); i++)
             {
-                int T = H.Dequeue();
-                top_K.Add(T);
-                int num = H.Count();
-                int p = 0;
+                int T = H.Dequeue(); // take first element
+                top_K.Add(T); // add it to the top k list 
+                int num = H.Count(); // Reminder of the total of elements before popping elements
+                int p = 0; // Number of common grams with the query.
                 for (int j = 0; j < num; j++)
                 {
                     int element = H.Dequeue();
+                    // For all of the grams, if they are equal , add one to the count
                     if (T.Equals(element))
                     {
                         p += 1;
@@ -285,20 +289,23 @@ namespace AlgorithmLibrary.Algorithms
                     }
                 }
 
+                // If the number of equal grams is higher or equal than the threshold
                 if (p >= g)
                 {
+                    // For the first k elements you just add them to the result.
                     if (top < k)
                     {
                         top++;
                         top_K.Add(T);
                     }
-                    else if (p < top_K.Last())
+                    else if (p < top_K.Last()) // For the rest check  whether  it is more
+                                               // similar wiht the last element and add it
                     {
                         top_K.Remove(top_K.Last());
                         top_K.Add(p);
                     }
 
-
+                    // Recompute the threshold. 
                     if ((theta_min * n_gram) > ((n_gram + g_min) / 1 + (1 / theta_min)))
                     {
                         g = (theta_min * n_gram);
@@ -310,6 +317,8 @@ namespace AlgorithmLibrary.Algorithms
 
                     indx += 1;
 
+                    // Push next element( if any) of each popped list 
+                    // to H 
                     foreach (KeyValuePair<string, List<int>> s in grams)
                     {
                         if (indx > (s.Value).Count)
@@ -319,19 +328,21 @@ namespace AlgorithmLibrary.Algorithms
                         }
                     }
                 }
-                else
+                else // pop additional g - p - 1 elements from the heap
                 {
                     for (int j = 0; (j < g - p - 1) && (H.Count > 0); j++)
                     {
                         H.Dequeue();
                     }
 
-                    int T_prime = top_K[0];
+                    int T_prime = top_K[0]; // current top element
 
+                    // For each of the g - q popped lists 
                     foreach (KeyValuePair<string, List<int>> s in grams)
                     {
                         int min = 100000;
 
+                        // Locate its smallest element 
                         foreach (int E in s.Value)
                         {
                             if ((E < min) || (E > T_prime))
@@ -340,7 +351,7 @@ namespace AlgorithmLibrary.Algorithms
                             }
                         }
 
-
+                        // If there is a minimum add it to the heap.
                         if (min != 100000)
                         {
                             H.Enqueue(min);
