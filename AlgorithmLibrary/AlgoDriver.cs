@@ -58,7 +58,8 @@ namespace AlgorithmLibrary
         public string Algorithm2()
         {
             Algo2 algo = new Algo2();
-            return algo.GetResult();
+            string[] res = algo.GetResult();
+            return res[0];
         }
         public singleQueryResult BoyerMooreAlgorithm(QueryParameters parameters)
         {
