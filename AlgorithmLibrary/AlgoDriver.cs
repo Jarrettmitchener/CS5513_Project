@@ -55,11 +55,33 @@ namespace AlgorithmLibrary
             string[] res = algo.GetResult();
             return res[0];
         }
-        public string Algorithm2()
+        public singleQueryResult Algorithm2(QueryParameters parameters)
         {
+            Stopwatch sw = new Stopwatch();
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+
+            sw.Start();
             Algo2 algo = new Algo2();
-            string[] res = algo.GetResult();
-            return res[0];
+            var res = algo.GetResult(parameters.keywords, dataSetList);
+            sw.Stop();
+
+            List<textResult> result = new List<textResult>();
+
+            foreach (string s in res)
+            {
+                result.Add(new textResult
+                {
+                    text = s,
+                    dataset = ""
+                });
+
+            }
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = result;
+            singleQueryResult.numOfResults = result.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+            return singleQueryResult;
         }
         public singleQueryResult BoyerMooreAlgorithm(QueryParameters parameters)
         {

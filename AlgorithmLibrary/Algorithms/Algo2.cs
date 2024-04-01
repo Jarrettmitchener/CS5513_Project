@@ -1,5 +1,7 @@
-﻿using System;
+﻿using AlgorithmLibrary.Datasets;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,21 +95,34 @@ namespace AlgorithmLibrary.Algorithms
         }
 
 
-        public string[] GetResult()
+        public string[] GetResult(List<String> keywords, List<DatasetObject> dataSetList)
         {
-            //Add in arrays of strings from the text file.
-            string[] txt = { "School sucks. I don't like school.", "I like college.", "Where is work?", "College is school!" };
-            //add in array of word searches from a text file.
-            string pat = "school";
-            //any findings variable.
+            int count = 0;
+            //add in the dataset list into the array of texts. We want in the string value, not the index.
+            Dictionary<int, string> elements= new Dictionary<int, string>();
+            foreach (DatasetObject s in dataSetList)
+            {
+                elements[count] = s.Text;
+            }
+            List<string> textList = new List<string>();
+            textList = elements.Values.ToList();
+            string[] txt = textList.ToArray();
+            //add in the keywords we need to look for
+            string pat = "";
+            foreach(string s in keywords)
+            {
+                pat = s;
+            }
+            //int variable to prove that a keyword is found.
             int findings = 0;
-            //make a generic list of all found strings.
+            //make a generic list of all strings that contain the keyword.
             List<string> foundlist = new List<string>();
 
 
-            //Go through the strings array and search for the word or phrase.
+            //Go through the strings array and search for the word or phrase in each string entry.
             for (int i = 0; i < txt.Length; i++)
             {
+                //Always reset the finds to zero before moving on to the next entry list and performing the algorithm again.
                 findings = 0;
                 findings = KMPSearch(pat, txt[i], findings);
                 //If word or phrase is found add into the found index.
@@ -117,9 +132,8 @@ namespace AlgorithmLibrary.Algorithms
                 }
             }
 
-            //add them into the array.
+            //add them into the array and return the array to the algodriver.
             string[] foundarray = foundlist.ToArray();
-
             return foundarray;
 
         }
