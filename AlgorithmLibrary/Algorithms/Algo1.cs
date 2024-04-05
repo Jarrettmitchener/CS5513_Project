@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace AlgorithmLibrary.Algorithms
 {
@@ -17,6 +18,7 @@ namespace AlgorithmLibrary.Algorithms
         private Dictionary<string, double> weights = new Dictionary<string, double>();
         private int f = 1; // multiplication factor, may change depending on results
         private string[] R1 = new string[10]; // the range search result set
+        List<textResult> results = new List<textResult>();
         //private string[] init_set = new string[10]; // the range search result set
         private double theta = 0.0; // Similarity threshold, initially = 0.5
         private int q_value = 2; // Denotates q value for the gram calculation in the context
@@ -27,13 +29,13 @@ namespace AlgorithmLibrary.Algorithms
         private double g_min = 10; // What is the minimum similarity.
         private int theta_min = 1;  // The similarity initial threshold. 
         private Dictionary<int, string> index_elements = new Dictionary<int, string>(); // Stores the inverted grams list. 
-        private string[] query_grams = new string[20]; // Stores the grams of the query. 
+        private Dictionary<string, string> datasets = new Dictionary<string, string>(); // Stores the inverted grams list. 
+        private string[] query_grams; // Stores the grams of the query. 
 
-        // TEST VALUES
-        private string query = "macho es el mejor";
+        private string query;
 
         //Function called from the algorithm driver. 
-        public  string[] GetResult(List<String> keywords, List<DatasetObject> dataSetList)
+        public  List<textResult> GetResult(List<String> keywords, List<DatasetObject> dataSetList)
         {
             int count = 0;
 
@@ -42,8 +44,9 @@ namespace AlgorithmLibrary.Algorithms
             { 
                 index_elements[count] = s.Text;
                 weights[s.Text] = 0.1;
+                datasets[s.Text] = s.Dataset;
+                count++;
             }
-
 
             int s_count = 0;
             string s_query = "";
@@ -62,11 +65,8 @@ namespace AlgorithmLibrary.Algorithms
                     s_query = s; 
                 }
             }
-
-            // Compute the inverted index list that matches the query grams with the dataset tuples index that conains thar
-            // grmas.
-            computeGrams();
-
+            query_grams = new string[s_query.Length - q_value + 1];
+            
             // Call the ficntion that will execute the algorithm.
             return run_2HP(s_query);
         }
@@ -76,7 +76,7 @@ namespace AlgorithmLibrary.Algorithms
             // First start all of the lists, with the quey grams that will be used 
             // as the keys to retirve the indexes. 
             // This iterates over the query creating q_value length grams, that are subsrtirngs.
-            for (int j = 0; j < query.Length - q_value; j++)
+            for (int j = 0; j < query.Length - q_value + 1; j++)
             {
                 string g1 = query.Substring(j, q_value); // compute gram
                 query_grams[j] = (g1); // intitialize hash table
@@ -94,22 +94,38 @@ namespace AlgorithmLibrary.Algorithms
                     // then add the tuple index to the grams list.
                     if (query_grams.Contains(g1))
                     {
-                        grams[g1].Add(s.Key);
+                        if (!grams[g1].Contains(s.Key))
+                        {
+                            grams[g1].Add(s.Key);
+                            grams[g1].Sort();
+                        }
                     }
 
                 }
+
+
             }
         }
 
-        public string[] run_2HP(string s_query)
+        public List<textResult> run_2HP(string s_query)
         {
             // Read data 
             //init_set = read_data();
             query = s_query;
+
+            // Compute the inverted index list that matches the query grams with the dataset tuples index that
+            // conains that  grams.
+            computeGrams();
             R1 = IRS(); // itereative search algorithm
             computeFrequency(last_top_k_value); // Compute threshold with IRS values.
-            R1 = SPS(); // Single pass search 
-            return R1;
+            
+            List<string> R = new List<string>();
+            R = SPS(); // Single pass search 
+            foreach (string s in R)
+            {
+                results.Add(new textResult { text = s, dataset = datasets[s] });
+            }
+            return results ;
         }
 
         private void computeFrequency(double k)
@@ -175,7 +191,7 @@ namespace AlgorithmLibrary.Algorithms
         {
             // Initialize all necessary values ,
             double[] top_k = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-            string[] top_k_values = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10"];
+            string[] top_k_values = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None"];
             
             // For all the strings in the dataset.
             foreach (KeyValuePair<string, double> s in weights)
@@ -247,39 +263,37 @@ namespace AlgorithmLibrary.Algorithms
 
         // Single pass algorithm, second stage, computes the top k results using the 
         // grams and indexes to the elements. 
-        private string[] SPS()
+        private List<string> SPS()
         {
             double n_gram = (double)grams.Count; // Number of grams in the query     
-            double g = 0; // Freuency thresold.
+            double g = g_min; // Freuency thresold.
             List<int> top_K = new List<int>(); // list with top k elements,
+            double top_k_last = 0;
             int top = 0; // Number of added elemnts. 
-
             Queue<int> H = new Queue<int>();// The lists of ids for the query grams.
             int indx = 0; // Index for retrieving the values
-            string[] res = ["kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8",
-                "kk9", "kk10", "kk1 ", "kk2 ", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10",]; // result string
+            List<string> res = new List<string>(); // result string
 
             // insert the top element of each list to a heap
             foreach (KeyValuePair<string, List<int>> s in grams)
             {
-                if (s.Value.Count > 0)
+                if (s.Value.Count > 0 && s.Value.Count > indx)
                 {
                     H.Enqueue(s.Value[indx]);
                 }
             }
 
             // For all of the elemnts in the heap. 
-            for (int i = 0; i < H.Count(); i++)
+            while( H.Any())
             {
                 int T = H.Dequeue(); // take first element
-                top_K.Add(T); // add it to the top k list 
                 int num = H.Count(); // Reminder of the total of elements before popping elements
-                int p = 0; // Number of common grams with the query.
-                for (int j = 0; j < num; j++)
+                int p = 1; // Number of common grams with the query.
+                for (int j = 0; j < num - 1; j++)
                 {
                     int element = H.Dequeue();
                     // For all of the grams, if they are equal , add one to the count
-                    if (T.Equals(element))
+                    if (T == element)
                     {
                         p += 1;
                     }
@@ -296,23 +310,36 @@ namespace AlgorithmLibrary.Algorithms
                     if (top < k)
                     {
                         top++;
-                        top_K.Add(T);
+                        if (!top_K.Contains(T))
+                        {
+                            top_K.Add(T); // add it to the top k list 
+                            top_k_last = p;
+                        }
                     }
-                    else if (p < top_K.Last()) // For the rest check  whether  it is more
-                                               // similar wiht the last element and add it
+                    else if (p < top_k_last) // For the rest check  whether  it is more
+                                             // similar wiht the last element and add it
                     {
-                        top_K.Remove(top_K.Last());
-                        top_K.Add(p);
+                        top_K.RemoveAt(top_K.Count() - 1);
+                        if (!top_K.Contains(T))
+                        {
+                            top_K.Add(T); // add it to the top k list
+                            top_k_last = p;
+                        }
                     }
 
                     // Recompute the threshold. 
-                    if ((theta_min * n_gram) > ((n_gram + g_min) / 1 + (1 / theta_min)))
+                    if ((theta_min * n_gram) > ((n_gram + g_min) / ( 1 + (1 / theta_min))))
                     {
                         g = (theta_min * n_gram);
                     }
                     else
                     {
-                        g = ((n_gram + g_min) / 1.0 + (1.0 / theta_min));
+                        g = ((n_gram + g_min) / (1.0 + (1.0 / theta_min)));
+                    }
+
+                    if( g > n_gram)
+                    {
+                        break;
                     }
 
                     indx += 1;
@@ -321,9 +348,9 @@ namespace AlgorithmLibrary.Algorithms
                     // to H 
                     foreach (KeyValuePair<string, List<int>> s in grams)
                     {
-                        if (indx > (s.Value).Count)
+                        if (indx < (s.Value).Count)
                         {
-                            if(s.Value.Any())
+                            if (s.Value.Any())
                                 H.Enqueue(s.Value[indx]);
                         }
                     }
@@ -334,38 +361,39 @@ namespace AlgorithmLibrary.Algorithms
                     {
                         H.Dequeue();
                     }
-
-                    int T_prime = top_K[0]; // current top element
-
-                    // For each of the g - q popped lists 
-                    foreach (KeyValuePair<string, List<int>> s in grams)
+                    if (top_K.Count > 0)
                     {
-                        int min = 100000;
+                        int T_prime = top_K.Last(); // current  last top element
 
-                        // Locate its smallest element 
-                        foreach (int E in s.Value)
+                        // For each of the g - q popped lists 
+                        foreach (KeyValuePair<string, List<int>> s in grams)
                         {
-                            if ((E < min) || (E > T_prime))
+                            int min = 100000;
+
+                            // Locate its smallest element 
+                            foreach (int E in s.Value)
                             {
-                                min = E;
+                                if ((E < min) && (E >= T_prime))
+                                {
+                                    min = E;
+                                }
                             }
-                        }
 
-                        // If there is a minimum add it to the heap.
-                        if (min != 100000)
-                        {
-                            H.Enqueue(min);
+                            // If there is a minimum add it to the heap.
+                            if (min != 100000)
+                            {
+                                H.Enqueue(min);
+                            }
                         }
                     }
                 }
-
+                
             }
-            int m = 0;
+            //int m = 0;
             foreach (int index in top_K)
             {
                 // Retrieve the  entries that correspond with the gram  list index. 
-                res[m] = (index_elements[index]); 
-                    m++; 
+                res.Add(index_elements[index]);  
             }
 
             return res; // Return the top k results.,

@@ -55,20 +55,9 @@ namespace AlgorithmLibrary
 
             sw.Start();
             Algo1 algo = new Algo1();
-            var res = algo.GetResult(parameters.keywords, dataSetList);
+            var result = algo.GetResult(parameters.keywords, dataSetList);
             sw.Stop();
 
-            List<textResult> result = new List<textResult>();
-
-            foreach(string s in res)
-            {
-                result.Add(new textResult
-                {
-                    text = s,
-                    dataset = ""
-                });
-
-            }
 
             singleQueryResult singleQueryResult = new singleQueryResult();
             singleQueryResult.foundResults = result;
