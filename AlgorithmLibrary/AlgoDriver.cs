@@ -65,21 +65,9 @@ namespace AlgorithmLibrary
             var res = algo.GetResult(parameters.keywords, dataSetList);
             sw.Stop();
 
-            List<textResult> result = new List<textResult>();
-
-            foreach (string s in res)
-            {
-                result.Add(new textResult
-                {
-                    text = s,
-                    dataset = ""
-                });
-
-            }
-
             singleQueryResult singleQueryResult = new singleQueryResult();
-            singleQueryResult.foundResults = result;
-            singleQueryResult.numOfResults = result.Count();
+            singleQueryResult.foundResults = res;
+            singleQueryResult.numOfResults = res.Count();
             singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
             return singleQueryResult;
         }

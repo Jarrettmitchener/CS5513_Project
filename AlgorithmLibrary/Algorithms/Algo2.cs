@@ -8,6 +8,19 @@ using System.Threading.Tasks;
 
 namespace AlgorithmLibrary.Algorithms
 {
+
+    //Constructor to store in the text and the dataset of the object.
+    public class KMPListObj
+    {
+        public string text { get; set; }
+
+        public string lowercase { get; set; }
+
+        public string dataSet { get; set; }
+
+    }
+
+
     public class Algo2
     {
         //Main KMP search algorithm.
@@ -95,46 +108,63 @@ namespace AlgorithmLibrary.Algorithms
         }
 
 
-        public string[] GetResult(List<String> keywords, List<DatasetObject> dataSetList)
+        public List<textResult> GetResult(List<String> keywords, List<DatasetObject> dataSetList)
         {
-            int count = 0;
-            //add in the dataset list into the array of texts. We want in the string value, not the index.
-            Dictionary<int, string> elements= new Dictionary<int, string>();
-            foreach (DatasetObject s in dataSetList)
+            //declare list containing the found text corresponding to the dataset.
+            List<textResult> foundResults = new List<textResult>();
+
+            //declare list to store the dataset list.
+            List<KMPListObj> kMPListObjs = new List<KMPListObj>();
+
+            //variable object to store in the original text, lowered case text and the dataset.
+            //text and pattern will all be lowered case to search regardless of casing.
+            for(int i = 0; i < dataSetList.Count; i++)
             {
-                elements[count] = s.Text;
+                kMPListObjs.Add(new KMPListObj
+                {
+                    text = dataSetList[i].Text,
+                    lowercase = dataSetList[i].Text.ToLower(),
+                    dataSet = dataSetList[i].Dataset
+                }); ;
             }
-            List<string> textList = new List<string>();
-            textList = elements.Values.ToList();
-            string[] txt = textList.ToArray();
-            //add in the keywords we need to look for
+            
+
+            //add in the keywords we need to look for.
             string pat = "";
             foreach(string s in keywords)
             {
                 pat = s;
             }
-            //int variable to prove that a keyword is found.
+
+            //Set to lowercase in order to find the pattern regardless of casing.
+            pat = pat.ToLower();
+
+            //variable to track the occurences to see if the keyword is found.
             int findings = 0;
-            //make a generic list of all strings that contain the keyword.
-            List<string> foundlist = new List<string>();
 
 
-            //Go through the strings array and search for the word or phrase in each string entry.
-            for (int i = 0; i < txt.Length; i++)
+            //Go through the dataset list and search for the pattern in each string set.
+            foreach (var obj in kMPListObjs)
             {
                 //Always reset the finds to zero before moving on to the next entry list and performing the algorithm again.
                 findings = 0;
-                findings = KMPSearch(pat, txt[i], findings);
-                //If word or phrase is found add into the found index.
+
+                //perform the algorithm to look for any occurences of the finding.
+                findings = KMPSearch(pat, obj.lowercase, findings);
+
+                //If there are any occurences in the string, add that string.
                 if (findings != 0)
                 {
-                    foundlist.Add(txt[i]);
+                    foundResults.Add(new textResult
+                    {
+                        text = obj.text,
+                        dataset = obj.dataSet
+                    });
                 }
             }
 
-            //add them into the array and return the array to the algodriver.
-            string[] foundarray = foundlist.ToArray();
-            return foundarray;
+            //Done with the search, now return it into the algo driver.
+            return foundResults;
 
         }
     }
