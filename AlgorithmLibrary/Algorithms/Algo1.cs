@@ -26,8 +26,8 @@ namespace AlgorithmLibrary.Algorithms
         private double beta = 1.0; // Relevance weight 
         private double last_top_k_value = 0; // Stores the similarity value of the last result. 
         private Dictionary<string, List<int>> grams = new Dictionary<string, List<int>>(); // Stores the dataset grams 
-        private double g_min = 10; // What is the minimum similarity.
-        private int theta_min = 1;  // The similarity initial threshold. 
+        private double g_min = 100000; // What is the minimum similarity.
+        private double theta_min = 1;  // The similarity initial threshold. 
         private Dictionary<int, string> index_elements = new Dictionary<int, string>(); // Stores the inverted grams list. 
         private Dictionary<string, string> datasets = new Dictionary<string, string>(); // Stores the inverted grams list. 
         private string[] query_grams; // Stores the grams of the query. 
@@ -86,14 +86,18 @@ namespace AlgorithmLibrary.Algorithms
             // iterate over the dataset tuples. Looking for matches
             foreach (KeyValuePair<int, string> s in index_elements)
             {
+                double count = 0;
                 // Compute each tuple grams.
                 for (int j = 0; j < s.Value.Length - q_value; j++)
                 {
+                    
                     string g1 = s.Value.Substring(j, q_value);
+                    count++;
                     // if the query grams list contains that gram.
                     // then add the tuple index to the grams list.
                     if (query_grams.Contains(g1))
                     {
+                        
                         if (!grams[g1].Contains(s.Key))
                         {
                             grams[g1].Add(s.Key);
@@ -101,9 +105,14 @@ namespace AlgorithmLibrary.Algorithms
                         }
                     }
 
+                    if (count < g_min)
+                    {
+                        g_min = count;
+                    }
+
                 }
 
-
+                
             }
         }
 
@@ -133,7 +142,7 @@ namespace AlgorithmLibrary.Algorithms
             weights.Order(); // order the list by weight 
             double n_max = weights.First().Value; // get the highest value
 
-            g_min = (k - beta * n_max) / alpha; // Compute using the threshold fomula.
+            theta_min = (k - beta * n_max) / alpha; // Compute using the threshold fomula.
         }
 
         private string[] IRS()
@@ -316,7 +325,7 @@ namespace AlgorithmLibrary.Algorithms
                             top_k_last = p;
                         }
                     }
-                    else if (p < top_k_last) // For the rest check  whether  it is more
+                    else if ( p < top_k_last) // For the rest check  whether  it is more
                                              // similar wiht the last element and add it
                     {
                         top_K.RemoveAt(top_K.Count() - 1);
@@ -337,7 +346,7 @@ namespace AlgorithmLibrary.Algorithms
                         g = ((n_gram + g_min) / (1.0 + (1.0 / theta_min)));
                     }
 
-                    if( g > n_gram)
+                    if( g >= n_gram)
                     {
                         break;
                     }
@@ -364,16 +373,18 @@ namespace AlgorithmLibrary.Algorithms
                     if (top_K.Count > 0)
                     {
                         int T_prime = top_K.Last(); // current  last top element
-
+                        int count = 0; 
                         // For each of the g - q popped lists 
                         foreach (KeyValuePair<string, List<int>> s in grams)
                         {
+                            if (count > g - 1)
+                                break; 
                             int min = 100000;
 
                             // Locate its smallest element 
                             foreach (int E in s.Value)
                             {
-                                if ((E < min) && (E >= T_prime))
+                                if ((E < min) && (E >T_prime))
                                 {
                                     min = E;
                                 }
