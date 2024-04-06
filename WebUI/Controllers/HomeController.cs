@@ -80,7 +80,16 @@ namespace WebUI.Controllers
                     retunString = algDriver.Algorithm1();
                     break;
                 case 2:
-                    var result = algDriver.Algorithm2(queryParameters);
+                    //Need advance option or a normal search?
+                    singleQueryResult result = new singleQueryResult();
+                    if(model.Advanced)
+                    {
+                        result = algDriver.Algorithm2Advanced(queryParameters);
+                    }
+                    else
+                    {
+                        result = algDriver.Algorithm2(queryParameters);
+                    }
                     result.foundResults = result.foundResults.Take(20).ToList();
                     return View("SingleResults", result);
                     break;
