@@ -134,16 +134,12 @@ namespace AlgorithmLibrary.Algorithms
                 }); ;
             }
 
-
-            //add in the keywords we need to look for.
-            string pat = "";
-            foreach (string s in keywords)
+            //make all the keywords lowercase.
+            for (int i = 0; i < keywords.Count; i++)
             {
-                pat = s;
+                keywords[i] = keywords[i].ToLower();
             }
 
-            //Set to lowercase in order to find the pattern regardless of casing.
-            pat = pat.ToLower();
 
             //variable to track the occurences to see if the keyword is found.
             int findings = 0;
@@ -155,8 +151,11 @@ namespace AlgorithmLibrary.Algorithms
                 //Always reset the finds to zero before moving on to the next entry list and performing the algorithm again.
                 findings = 0;
 
-                //perform the algorithm to look for any occurences of the finding.
-                findings = KMPSearch(pat, obj.lowercase, findings);
+                //nested for loop to look for every keyword in the given dataset.
+                foreach (var word in keywords)
+                {
+                    findings = KMPSearch(word, obj.lowercase, findings);
+                }
 
                 //If there are any occurences in the string, add that string.
                 if (findings != 0)
