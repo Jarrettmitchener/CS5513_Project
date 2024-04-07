@@ -9,19 +9,20 @@ using System.Threading.Tasks;
 namespace AlgorithmLibrary.Algorithms
 {
 
-    //Constructor to store in the text and the dataset of the object.
-    public class KMPListObj
+    //Constructor to store in the number of finds from the found text and the associated dataset.
+    public class Searches
     {
-        public string text { get; set; }
 
-        public string lowercase { get; set; }
+        public int numberOfFinds { get; set; }
+
+        public string text { get; set; }
 
         public string dataSet { get; set; }
 
     }
 
-
-    public class Algo2
+    //Algorithm is the same as the original algorithm
+    public class Algo2Advanced
     {
         //Main KMP search algorithm.
         public int KMPSearch(string pat, string txt, int findings)
@@ -107,19 +108,23 @@ namespace AlgorithmLibrary.Algorithms
             }
         }
 
-
+        //This time we will sort the strings to start with the highest amount of occurances.
         public List<textResult> GetResult(List<String> keywords, List<DatasetObject> dataSetList)
         {
-            //declare list containing the found text corresponding to the dataset.
+            //declare list containing the found text corresponding to the dataset. 
             //This list will be returned to the driver.
             List<textResult> foundResults = new List<textResult>();
 
             //declare list to store the dataset list.
             List<KMPListObj> kMPListObjs = new List<KMPListObj>();
 
+            //declare list to store in the occurances of each string.
+            //This will be sorted and added into found results to display the highest finding occurences.
+            List<Searches> searches = new List<Searches>();
+
             //variable object to store in the original text, lowered case text and the dataset.
             //text and pattern will all be lowered case to search regardless of casing.
-            for(int i = 0; i < dataSetList.Count; i++)
+            for (int i = 0; i < dataSetList.Count; i++)
             {
                 kMPListObjs.Add(new KMPListObj
                 {
@@ -128,7 +133,6 @@ namespace AlgorithmLibrary.Algorithms
                     dataSet = dataSetList[i].Dataset
                 }); ;
             }
-
 
             //make all the keywords lowercase.
             for (int i = 0; i < keywords.Count; i++)
@@ -156,15 +160,32 @@ namespace AlgorithmLibrary.Algorithms
                 //If there are any occurences in the string, add that string.
                 if (findings != 0)
                 {
-                    foundResults.Add(new textResult
+                    searches.Add(new Searches
                     {
+                        numberOfFinds = findings,
                         text = obj.text,
-                        dataset = obj.dataSet
+                        dataSet = obj.dataSet
                     });
                 }
             }
 
-            //Done with the search, now return it into the algo driver.
+
+            //Perform the sort so that the strings with the highest occurences will be displayed first.
+            var findingsSorted = searches.OrderByDescending(r => r.numberOfFinds).ToList();
+
+
+            //Add the sorted list into the list to be returned to the driver.
+            foreach (var obj in findingsSorted)
+            {
+                foundResults.Add(new textResult
+                {
+                    text = obj.text,
+                    dataset = obj.dataSet
+                });
+            }
+
+
+            //Done with the search and the sort, now return it into the algo driver.
             return foundResults;
 
         }

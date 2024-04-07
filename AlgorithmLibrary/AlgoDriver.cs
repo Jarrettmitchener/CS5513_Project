@@ -55,10 +55,43 @@ namespace AlgorithmLibrary
             string[] res = algo.GetResult();
             return res[0];
         }
-        public string Algorithm2()
+
+        //KMP Algorithm without advanced selected.
+        public singleQueryResult Algorithm2(QueryParameters parameters)
         {
-            Algo2 algo = new Algo2();
-            return algo.GetResult();
+            Stopwatch sw = new Stopwatch();
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+
+            sw.Start();
+            Algo2 algo2 = new Algo2();
+            var res = algo2.GetResult(parameters.keywords, dataSetList);
+            sw.Stop();
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = res;
+            singleQueryResult.numOfResults = res.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+            return singleQueryResult;
+        }
+
+        //KMP algorithm if advanced is selected. This will sort the strings to show first the highest search occurances.
+        //TODO: Implement advanced algorithm.
+        public singleQueryResult Algorithm2Advanced(QueryParameters parameters)
+        {
+            Stopwatch sw = new Stopwatch();
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
+
+            sw.Start();
+            Algo2Advanced algo2Advanced = new Algo2Advanced();
+            var res = algo2Advanced.GetResult(parameters.keywords, dataSetList);
+            sw.Stop();
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = res;
+            singleQueryResult.numOfResults = res.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+            return singleQueryResult;
+
         }
         public singleQueryResult BoyerMooreAlgorithm(QueryParameters parameters)
         {
