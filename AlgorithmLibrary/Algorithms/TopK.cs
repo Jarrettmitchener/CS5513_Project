@@ -11,7 +11,7 @@ using System.Xml.Linq;
 
 namespace AlgorithmLibrary.Algorithms
 {
-    public class Algo1
+    public class TopK
     {
         private int k = 10; // Number of results requested
         private double max_w; // Maximum weight of a string
@@ -21,7 +21,7 @@ namespace AlgorithmLibrary.Algorithms
         List<textResult> results = new List<textResult>();
         //private string[] init_set = new string[10]; // the range search result set
         private double theta = 0.0; // Similarity threshold, initially = 0.5
-        private int q_value = 2; // Denotates q value for the gram calculation in the context
+        //private int q_value = 2; // Denotates q value for the gram calculation in the context
         private double alpha = 1.0; // Similarity weight
         private double beta = 1.0; // Relevance weight 
         private double last_top_k_value = 0; // Stores the similarity value of the last result. 
@@ -35,7 +35,7 @@ namespace AlgorithmLibrary.Algorithms
         private string query;
 
         //Function called from the algorithm driver. 
-        public  List<textResult> GetResult(List<String> keywords, List<DatasetObject> dataSetList)
+        public  List<textResult> GetResult(List<String> keywords, List<DatasetObject> dataSetList, int q_value)
         {
             int count = 0;
 
@@ -68,10 +68,10 @@ namespace AlgorithmLibrary.Algorithms
             query_grams = new string[s_query.Length - q_value + 1];
             
             // Call the ficntion that will execute the algorithm.
-            return run_2HP(s_query);
+            return run_2HP(s_query, q_value);
         }
 
-        private void computeGrams()
+        private void computeGrams(int q_value)
         {
             // First start all of the lists, with the quey grams that will be used 
             // as the keys to retirve the indexes. 
@@ -116,7 +116,7 @@ namespace AlgorithmLibrary.Algorithms
             }
         }
 
-        public List<textResult> run_2HP(string s_query)
+        public List<textResult> run_2HP(string s_query, int q_value)
         {
             // Read data 
             //init_set = read_data();
@@ -124,8 +124,8 @@ namespace AlgorithmLibrary.Algorithms
 
             // Compute the inverted index list that matches the query grams with the dataset tuples index that
             // conains that  grams.
-            computeGrams();
-            R1 = IRS(); // itereative search algorithm
+            computeGrams(q_value);
+            R1 = IRS(q_value); // itereative search algorithm
             computeFrequency(last_top_k_value); // Compute threshold with IRS values.
             
             List<string> R = new List<string>();
@@ -145,7 +145,7 @@ namespace AlgorithmLibrary.Algorithms
             theta_min = (k - beta * n_max) / alpha; // Compute using the threshold fomula.
         }
 
-        private string[] IRS()
+        private string[] IRS(int q_value)
         {
 
             string[] res = [""];
@@ -153,7 +153,7 @@ namespace AlgorithmLibrary.Algorithms
             while (res.Length < f * k)
             {
                 // Compute the top k results using the  initial similarity threshold
-                res = computeSmilarity();
+                res = computeSmilarity(q_value);
 
                 // if the size of the result set is less than the frequency and 
                // multiplied by the k, you need to decrement the similarity threshold 
@@ -179,7 +179,7 @@ namespace AlgorithmLibrary.Algorithms
             if (min_theta < theta)
             {
                 theta = min_theta;
-                res = computeSmilarity();
+                res = computeSmilarity(q_value);
             }
       
             return res; // return the resulting set
@@ -196,7 +196,7 @@ namespace AlgorithmLibrary.Algorithms
 
         // Approximate search algorithm, finds the top k results given a 
         // query string and dataset.
-        private string[] computeSmilarity()
+        private string[] computeSmilarity(int q_value)
         {
             // Initialize all necessary values ,
             double[] top_k = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];

@@ -53,14 +53,14 @@ namespace AlgorithmLibrary
         }
 
 
-        public singleQueryResult Algorithm1(QueryParameters parameters)
+        public singleQueryResult TopKAlgorithm(QueryParameters parameters, int q_value)
         {
             Stopwatch sw = new Stopwatch();
             var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
 
             sw.Start();
-            Algo1 algo = new Algo1();
-            var result = algo.GetResult(parameters.keywords, dataSetList);
+            TopK topk = new TopK();
+            var result = topk.GetResult(parameters.keywords, dataSetList, q_value);
             sw.Stop();
 
 
@@ -72,14 +72,14 @@ namespace AlgorithmLibrary
         }
 
         //KMP Algorithm without advanced selected.
-        public singleQueryResult Algorithm2(QueryParameters parameters)
+        public singleQueryResult KMPAlgorithm(QueryParameters parameters)
         {
             Stopwatch sw = new Stopwatch();
             var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
 
             sw.Start();
-            Algo2 algo2 = new Algo2();
-            var res = algo2.GetResult(parameters.keywords, dataSetList);
+            KMP kmp = new KMP();
+            var res = kmp.GetResult(parameters.keywords, dataSetList);
             sw.Stop();
 
             singleQueryResult singleQueryResult = new singleQueryResult();
@@ -91,14 +91,14 @@ namespace AlgorithmLibrary
 
         //KMP algorithm if advanced is selected. This will sort the strings to show first the highest search occurances.
         //TODO: Implement advanced algorithm.
-        public singleQueryResult Algorithm2Advanced(QueryParameters parameters)
+        public singleQueryResult KMPAlgorithmAdvanced(QueryParameters parameters)
         {
             Stopwatch sw = new Stopwatch();
             var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
 
             sw.Start();
-            Algo2Advanced algo2Advanced = new Algo2Advanced();
-            var res = algo2Advanced.GetResult(parameters.keywords, dataSetList);
+            KMPAdvanced kmpAdvanced = new KMPAdvanced();
+            var res = kmpAdvanced.GetResult(parameters.keywords, dataSetList);
             sw.Stop();
 
             singleQueryResult singleQueryResult = new singleQueryResult();
@@ -158,7 +158,17 @@ namespace AlgorithmLibrary
             var newsSummariesDataset = _dtHandler.buildDatasetList(false, false, false, true, false);
             var spotifyTracksDataset = _dtHandler.buildDatasetList(false, false, false, false, true);
 
+            //required objects for searches
+            BoyerMoore boyerMoore = new BoyerMoore();
+            BoyerMooreAdvanced boyerMooreAdvanced = new BoyerMooreAdvanced();
+
+            TopK topk = new TopK();
+
+            KMP kmp = new KMP();
+            KMPAdvanced kmpAdvanced = new KMPAdvanced();
+
             //runs the first dataset on all three algorithms
+            //var boyerMooreR1 = 
 
         }
     }
