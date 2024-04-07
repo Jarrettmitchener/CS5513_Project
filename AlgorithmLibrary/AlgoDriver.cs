@@ -35,6 +35,11 @@ namespace AlgorithmLibrary
         }
     }
 
+    public class  comparativeQuery
+    {
+        public List<string> keywords = new List<string>();
+    }
+
     public class AlgoDriver
     {
         //main file that calls the other 3 algorithm files
@@ -142,6 +147,19 @@ namespace AlgorithmLibrary
             singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
 
             return singleQueryResult;
+        }
+
+        public void StatisticalAnalysis(comparativeQuery query)
+        {
+            //builds the dataset lists
+            var disneyDataset = _dtHandler.buildDatasetList(true, false, false, false, false);
+            var BBCDataset = _dtHandler.buildDatasetList(false, true, false, false, false);
+            var humorDataset = _dtHandler.buildDatasetList(false, false, true, false, false);
+            var newsSummariesDataset = _dtHandler.buildDatasetList(false, false, false, true, false);
+            var spotifyTracksDataset = _dtHandler.buildDatasetList(false, false, false, false, true);
+
+            //runs the first dataset on all three algorithms
+
         }
     }
 }
