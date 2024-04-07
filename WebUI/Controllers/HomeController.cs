@@ -47,6 +47,7 @@ namespace WebUI.Controllers
             public bool Advanced { get; set; }
             public int q_gramValue { get; set; }
         }
+
         //gets the model data from the submitted
         [HttpPost]
         public IActionResult ProcessSearch(SearchViewModel model)
@@ -123,6 +124,21 @@ namespace WebUI.Controllers
 
             //directs the web app to the "SearchResults.cshtml" page
             return View("SearchResults");
+        }
+
+        
+
+        [HttpGet]
+        public IActionResult StatSearch()
+        {
+            return View();
+        }
+
+        public IActionResult ProcessStatSearch(StatSearchVM vm)
+        {
+            AlgoDriver algDriver = new AlgoDriver();
+            List<comparativeQueryResult> results = algDriver.StatisticalAnalysis(vm);
+            return View("StatSearchResults", results);
         }
     }
 }

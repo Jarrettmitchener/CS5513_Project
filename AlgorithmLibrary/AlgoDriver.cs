@@ -35,9 +35,45 @@ namespace AlgorithmLibrary
         }
     }
 
-    public class  comparativeQuery
+    public class StatSearchVM
     {
-        public List<string> keywords = new List<string>();
+        public string disneyKeyword { get; set; }
+        public string BBCKeyword { get; set; }
+        public string humorKeyword { get; set; }
+        public string newsKeyword { get; set; }
+        public string spotifyKeyword { get; set; }
+
+        public int q_value1 { get; set; }
+        public int q_value2 { get; set; }
+
+    }
+    //result for a single comparative query
+    public class comparativeQueryResult
+    {
+        public double bmTime { get; set; }
+        public int bmTotalResults { get; set; }
+        public List<textResult> bmResults { get; set; }
+        public double bmaTime { get; set; }
+        public int bmaTotalResults { get; set; }
+        public List<textResult> bmaResults { get; set; }
+
+        public double kmpTime { get; set; }
+        public int kmpTotalResults { get; set; }
+        public List<textResult> kmpResults { get; set; }
+        public double kmpaTime { get; set; }
+        public int kmpaTotalResults { get; set; }
+        public List<textResult> kmpaResults { get; set; }
+
+
+        public double topKTime1 { get; set; }
+        public int topKq_value1 { get; set; }
+        public List<textResult> topkResults1 { get; set; }
+        public double topKTime2 { get; set; }
+        public int topKq_value2 { get; set; }
+        public List<textResult> topkResults2 { get; set; }
+
+        public string keyword { get; set; }
+
     }
 
     public class AlgoDriver
@@ -149,27 +185,170 @@ namespace AlgorithmLibrary
             return singleQueryResult;
         }
 
-        public void StatisticalAnalysis(comparativeQuery query)
+        public List<comparativeQueryResult> StatisticalAnalysis(StatSearchVM vm)
         {
-            //builds the dataset lists
-            var disneyDataset = _dtHandler.buildDatasetList(true, false, false, false, false);
-            var BBCDataset = _dtHandler.buildDatasetList(false, true, false, false, false);
-            var humorDataset = _dtHandler.buildDatasetList(false, false, true, false, false);
-            var newsSummariesDataset = _dtHandler.buildDatasetList(false, false, false, true, false);
-            var spotifyTracksDataset = _dtHandler.buildDatasetList(false, false, false, false, true);
+
+            //DEBUG VARIABLES
+            //var DISNEYWORD = "food";
+            //var BBCWORD = "ferrari";
+            //var HUMORWORD = "genetic";
+            //var NEWSWORD = "Boeing";
+            //var SPOTIFYWORD = "love";
+
+            List<string> keywordList = new List<string>();
+            keywordList.Add(vm.disneyKeyword);
+            keywordList.Add(vm.BBCKeyword);
+            keywordList.Add(vm.humorKeyword);
+            keywordList.Add(vm.newsKeyword);
+            keywordList.Add(vm.spotifyKeyword);
+            var QVALUE1 = vm.q_value1;
+            var QVALUE2 = vm.q_value2;
 
             //required objects for searches
             BoyerMoore boyerMoore = new BoyerMoore();
             BoyerMooreAdvanced boyerMooreAdvanced = new BoyerMooreAdvanced();
 
-            TopK topk = new TopK();
-
             KMP kmp = new KMP();
             KMPAdvanced kmpAdvanced = new KMPAdvanced();
 
-            //runs the first dataset on all three algorithms
-            //var boyerMooreR1 = 
+            Stopwatch sw = new Stopwatch();
 
+            //result that will be used to store all of our results
+            List<comparativeQueryResult> queryResults = new List<comparativeQueryResult>();
+
+            //assigns the keyword for the next view
+
+            for(int i = 0; i < keywordList.Count; i++)
+            {
+                comparativeQueryResult result = new comparativeQueryResult();
+                //this is an array of one to be compatable with our algorithms
+                var keyword = new List<string>
+                {
+                    keywordList[i],
+                };
+                //gets dataset depending on iteration
+                var currDataset = getDataset(i);
+                result.keyword = assignKeywrod(i, vm);
+
+                //boyer moore
+                sw.Start();
+                var bm = boyerMoore.Search(keyword, currDataset);
+                sw.Stop();
+                result.bmTime = sw.Elapsed.TotalSeconds;
+                result.bmTotalResults = bm.Count;
+                result.bmResults = bm.Take(3).ToList();
+
+                //boyer moore advanced
+                sw.Restart();
+                sw.Start();
+                var bma = boyerMooreAdvanced.Search(keyword, currDataset);
+                sw.Stop();
+                result.bmaTime = sw.Elapsed.TotalSeconds;
+                result.bmaTotalResults = bma.Count;
+                result.bmaResults = bma.Take(3).ToList();
+
+                //KMP 
+                sw.Restart();
+                sw.Start();
+                var km = kmp.GetResult(keyword, currDataset);
+                sw.Stop();
+                result.kmpTime = sw.Elapsed.TotalSeconds;
+                result.kmpTotalResults = km.Count;
+                result.kmpResults = km.Take(3).ToList();
+
+                //KMP advanced
+                sw.Restart();
+                sw.Start();
+                var kma = kmpAdvanced.GetResult(keyword, currDataset);
+                sw.Stop();
+                result.kmpaTime = sw.Elapsed.TotalSeconds;
+                result.kmpaTotalResults = kma.Count;
+                result.kmpaResults = kma.Take(3).ToList();
+
+
+
+                //TopK second q value
+                TopK topk1 = new TopK();
+                sw.Restart();
+                sw.Start();
+                var tk1 = topk1.GetResult(keyword, currDataset, QVALUE1);
+                sw.Stop();
+                result.topKTime1 = sw.Elapsed.TotalSeconds;
+                result.topkResults1 = tk1.Take(3).ToList();
+                result.topKq_value1 = QVALUE1;
+
+                //TopK second q value
+                TopK topk2 = new TopK();
+                sw.Restart();
+                sw.Start();
+                var tk2 = topk2.GetResult(keyword, currDataset, QVALUE2);
+                sw.Stop();
+                result.topKTime2 = sw.Elapsed.TotalSeconds;
+                result.topkResults2 = tk2.Take(3).ToList();
+                result.topKq_value2 = QVALUE2;
+
+                queryResults.Add(result);
+            }
+            return queryResults;
+
+        }
+        //builds the correct dataset depending on what stage the loop is
+        private List<DatasetObject> getDataset(int i)
+        {
+            List<DatasetObject> datasetObjects = new List<DatasetObject>();
+            switch (i)
+            {
+                case 0:
+                    datasetObjects = _dtHandler.buildDatasetList(true, false, false, false, false);
+                    break;
+
+                case 1:
+                    datasetObjects = _dtHandler.buildDatasetList(false, true, false, false, false);
+                    break;
+
+                case 2:
+                    datasetObjects = _dtHandler.buildDatasetList(false, false, true, false, false);
+                    break;
+
+                case 3:
+                    datasetObjects = _dtHandler.buildDatasetList(false, false, false, true, false);
+                    break;
+
+                case 4:
+                    datasetObjects = _dtHandler.buildDatasetList(false, false, false, false, true);
+                    break;
+            }
+
+            return datasetObjects;
+        }
+
+        private string assignKeywrod(int i, StatSearchVM vm)
+        {
+            string keyword = "";
+            switch (i)
+            {
+                case 0:
+                    keyword = vm.disneyKeyword;
+                    break;
+
+                case 1:
+                    keyword = vm.BBCKeyword;
+                    break;
+
+                case 2:
+                    keyword = vm.humorKeyword;
+                    break;
+
+                case 3:
+                    keyword = vm.newsKeyword;
+                    break;
+
+                case 4:
+                    keyword = vm.spotifyKeyword;
+                    break;
+            }
+
+            return keyword;
         }
     }
 }
