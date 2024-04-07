@@ -3,6 +3,7 @@ using System.Diagnostics;
 using WebUI.Models;
 
 using AlgorithmLibrary;
+using System.Reflection.Metadata.Ecma335;
 
 namespace WebUI.Controllers
 {
@@ -77,7 +78,9 @@ namespace WebUI.Controllers
             switch (model.Algorithm)
             {
                 case 1:
-                    retunString = algDriver.Algorithm1();
+                    singleQueryResult top_k_newResult = new singleQueryResult();
+                    top_k_newResult = algDriver.Algorithm1(queryParameters);
+                    return View("SingleResults", top_k_newResult);
                     break;
                 case 2:
                     //Need advance option or a normal search?

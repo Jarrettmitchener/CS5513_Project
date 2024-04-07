@@ -46,6 +46,7 @@ namespace AlgorithmLibrary.Datasets
         private List<DatasetObject> extractTextFromDataset(string filePath, string header, string datasetName)
         {
             //reads text from file
+            filePath = filePath.Replace("\\source\\repos", "");
             var csv = File.ReadAllText(filePath);
 
             List<DatasetObject> articles = new List<DatasetObject>();
@@ -69,6 +70,7 @@ namespace AlgorithmLibrary.Datasets
         {
             string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
             string filePath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\" + fileName;
+            filePath = filePath.Replace("\\Source\\Repos", "");
 
             return getAverageWords(filePath, header);
         }
@@ -84,6 +86,7 @@ namespace AlgorithmLibrary.Datasets
             //sets the execution as the root, which will give us filepath errors. this fixes it
             string solutiondir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
             string partialPath = solutiondir + "\\" + "CS5513_Project\\AlgorithmLibrary" + "\\Datasets\\";
+            partialPath = partialPath.Replace("\\Source\\Repos", "");
 
             List<DatasetObject> datasetList = new List<DatasetObject>();
             //if statement case that builds the list based on what datasets the user wanted

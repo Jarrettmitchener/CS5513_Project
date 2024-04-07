@@ -48,12 +48,22 @@ namespace AlgorithmLibrary
         }
 
 
-        public string Algorithm1()
+        public singleQueryResult Algorithm1(QueryParameters parameters)
         {
+            Stopwatch sw = new Stopwatch();
+            var dataSetList = _dtHandler.buildDatasetList(parameters.Dataset1, parameters.Dataset2, parameters.Dataset3, parameters.Dataset4, parameters.Dataset5);
 
+            sw.Start();
             Algo1 algo = new Algo1();
-            string[] res = algo.GetResult();
-            return res[0];
+            var result = algo.GetResult(parameters.keywords, dataSetList);
+            sw.Stop();
+
+
+            singleQueryResult singleQueryResult = new singleQueryResult();
+            singleQueryResult.foundResults = result;
+            singleQueryResult.numOfResults = result.Count();
+            singleQueryResult.searchtime = sw.Elapsed.TotalSeconds;
+            return singleQueryResult;
         }
 
         //KMP Algorithm without advanced selected.
