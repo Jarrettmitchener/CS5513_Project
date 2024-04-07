@@ -154,7 +154,13 @@ namespace AlgorithmLibrary.Algorithms
                 {
                     result.resultFound = true;
                     result.foundCount++;
-                    s += (s + m < n) ? m - badChar[text[s + m]] : 1;
+                    char c = text[s];
+                    if (c > 256)
+                    {
+                        c = ' ';
+                    }
+                    //s += (s + m < n) ? m - badChar[text[s + m]] : 1;
+                    s += Math.Max(1, j - badChar[c]);
                 }
                 else
                 {
