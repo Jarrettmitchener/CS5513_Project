@@ -45,7 +45,9 @@ namespace WebUI.Controllers
             public bool Dataset4Selected { get; set; }
             public bool Dataset5Selected { get; set; }
             public bool Advanced { get; set; }
+            public int q_gramValue { get; set; }
         }
+
         //gets the model data from the submitted
         [HttpPost]
         public IActionResult ProcessSearch(SearchViewModel model)
@@ -79,18 +81,18 @@ namespace WebUI.Controllers
             {
                 case 1:
                     singleQueryResult top_k_newResult = new singleQueryResult();
-                    top_k_newResult = algDriver.Algorithm1(queryParameters);
+                    top_k_newResult = algDriver.TopKAlgorithm(queryParameters, model.q_gramValue);
                     return View("SingleResults", top_k_newResult);
                 case 2:
                     //Need advance option or a normal search?
                     singleQueryResult result = new singleQueryResult();
                     if(model.Advanced)
                     {
-                        result = algDriver.Algorithm2Advanced(queryParameters);
+                        result = algDriver.KMPAlgorithmAdvanced(queryParameters);
                     }
                     else
                     {
-                        result = algDriver.Algorithm2(queryParameters);
+                        result = algDriver.KMPAlgorithm(queryParameters);
                     }
                     result.foundResults = result.foundResults.Take(20).ToList();
                     return View("SingleResults", result);
@@ -122,6 +124,21 @@ namespace WebUI.Controllers
 
             //directs the web app to the "SearchResults.cshtml" page
             return View("SearchResults");
+        }
+
+        
+
+        [HttpGet]
+        public IActionResult StatSearch()
+        {
+            return View();
+        }
+
+        public IActionResult ProcessStatSearch(StatSearchVM vm)
+        {
+            AlgoDriver algDriver = new AlgoDriver();
+            List<comparativeQueryResult> results = algDriver.StatisticalAnalysis(vm);
+            return View("StatSearchResults", results);
         }
     }
 }

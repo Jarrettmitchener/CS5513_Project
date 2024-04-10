@@ -1,0 +1,80 @@
+﻿@model List<AlgorithmLibrary.comparativeQueryResult>
+
+@{
+    ViewBag.Title = "Comparative Query Results";
+}
+
+<h2>Comparative Query Results</h2>
+
+@foreach (var result in Model)
+{
+    <label><strong>Keyword: @result.keyword on dataset @result.bmaResults.First().dataset</strong></label>
+    <div class="result">
+        <h3>Boyer-Moore Results</h3>
+        <p>Query Time: @result.bmTime</p>
+        <p>Total Results: @result.bmTotalResults</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var bmResult in result.bmResults)
+            {
+                <li>@bmResult.text</li>
+            }
+        </ol>
+
+        <h3>Boyer-Moore Advanced Results</h3>
+        <p>Query Time: @result.bmaTime</p>
+        <p>Total Results: @result.bmaTotalResults</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var bmaResult in result.bmaResults)
+            {
+                <li>@bmaResult.text</li>
+            }
+        </ol>
+
+        <h3>Knuth-Morris-Pratt Results</h3>
+        <p>Query Time: @result.kmpTime</p>
+        <p>Total Results: @result.kmpTotalResults</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var kmpResult in result.kmpResults)
+            {
+                <li>@kmpResult.text</li>
+            }
+        </ol>
+
+        <h3>Knuth-Morris-Pratt Advanced Results</h3>
+        <p>Query Time: @result.kmpaTime</p>
+        <p>Total Results: @result.kmpaTotalResults</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var kmpaResult in result.kmpaResults)
+            {
+                <li>@kmpaResult.text</li>
+            }
+        </ol>
+
+        <h3>Top K Results with q value: @result.topKq_value1</h3>
+        <p>Query Time: @result.topKTime1</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var topkResult1 in result.topkResults1)
+            {
+                <li>@topkResult1.text</li>
+            }
+        </ol>
+
+        <h3>Top K Results with q value: @result.topKq_value2</h3>
+        <p>Query Time: @result.topKTime2</p>
+        <h4>Top 3 Results</h4>
+        <ol>
+            @foreach (var topkResult2 in result.topkResults2)
+            {
+                <li>@topkResult2.text</li>
+            }
+        </ol>
+
+        <label><strong>-------------------------------------------------------------------------------------------------------------------------</strong></label>
+        <br />
+    </div>
+}

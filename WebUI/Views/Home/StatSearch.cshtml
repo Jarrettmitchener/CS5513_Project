@@ -1,0 +1,48 @@
+﻿@model AlgorithmLibrary.StatSearchVM
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<h2>Search Statistics</h2>
+
+<form method="post" asp-action="ProcessStatSearch">
+
+    <div class="form-group">
+        <label for="disneyKeyword">Disney dataset search Keyword:</label>
+        @Html.TextBoxFor(model => model.disneyKeyword, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="BBCKeyword">BBC dataset Keyword</label>
+        @Html.TextBoxFor(model => model.BBCKeyword, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="humorKeyword">Humor texts dataset Keyword</label>
+        @Html.TextBoxFor(model => model.humorKeyword, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="newsKeyword">News summaries dataset Keyword</label>
+        @Html.TextBoxFor(model => model.newsKeyword, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="spotifyKeyword">spotify tracks Keyword</label>
+        @Html.TextBoxFor(model => model.spotifyKeyword, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="q_value1">q value 1</label>
+        @Html.TextBoxFor(model => model.q_value1, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label for="q_value2">q value 2</label>
+        @Html.TextBoxFor(model => model.q_value2, new { @class = "form-control" })
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
