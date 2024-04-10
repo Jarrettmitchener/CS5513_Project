@@ -231,6 +231,7 @@ namespace AlgorithmLibrary
                 result.keyword = assignKeywrod(i, vm);
 
                 //boyer moore
+                sw.Restart();
                 sw.Start();
                 var bm = boyerMoore.Search(keyword, currDataset);
                 sw.Stop();
